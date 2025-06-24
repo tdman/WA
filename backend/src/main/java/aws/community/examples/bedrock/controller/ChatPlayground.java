@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
@@ -16,6 +17,7 @@ import static aws.community.examples.bedrock.aimodels.LLM.Request;
 import static aws.community.examples.bedrock.aimodels.LLM.Response;
 
 @RestController
+@RequestMapping("/chat/support/")
 public class ChatPlayground {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatPlayground.class);
@@ -27,19 +29,17 @@ public class ChatPlayground {
         this.client = client;
     }
 
-    @PostMapping("/foundation-models/model/chat/anthropic.claude-v2/invoke")
+    @PostMapping("/conversation")
     public Response invoke(@RequestBody Request body) {
         try {
 
-            String systemPrompt =
-                    """
-                            Take the role of a friendly chat bot. Your responses are brief.
-                            You sometimes use emojis where appropriate, but you don't overdo it.
-                            You engage human in a dialog by regularly asking questions,
-                            except when Human indicates that the conversation is over.
-                            """;
+            String sysPrompt = "You are a friendly and professional customer support chatbot for an educational workbook app." +
+                    "Your role is to help users with any questions related to using the app, understanding learning content, managing subscriptions, and troubleshooting.  \n" +
+                    "Please respond in a warm, encouraging, and clear manner." +
+                    "Keep explanations simple and easy to understand." +
+                    "If you don’t know an answer, politely suggest contacting human support.";
 
-            String prompt = systemPrompt + "\n\n" + body.prompt();
+            String prompt = sysPrompt + "\n\n" + body.prompt();
 
             return new Response(Claude.invoke(client, prompt, 0.8, 300));
 

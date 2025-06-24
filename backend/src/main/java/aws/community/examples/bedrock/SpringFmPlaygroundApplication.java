@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.bedrock.BedrockClient;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
@@ -21,11 +22,13 @@ public class SpringFmPlaygroundApplication {
 	@Value("${aws.region}")
 	private String region;
 
+	private final AwsBasicCredentials AWS_CREDS = AwsBasicCredentials.create(System.getProperty("AWS_ACCESS_KEY_ID"), System.getProperty("AWS_SECRET_ACCESS_KEY"));
+
 	@Bean
 	public BedrockClient bedrockClient() {
 		return BedrockClient.builder()
-				.region(Region.of(region))
-				.credentialsProvider(DefaultCredentialsProvider.create())
+				.region(Region.of(region ))
+				.credentialsProvider(StaticCredentialsProvider.create(AWS_CREDS))
 				.build();
 	}
 
@@ -33,7 +36,7 @@ public class SpringFmPlaygroundApplication {
 	public BedrockRuntimeClient client() {
 		return BedrockRuntimeClient.builder()
 				.region(Region.of(region))
-				.credentialsProvider(DefaultCredentialsProvider.create())
+				.credentialsProvider(StaticCredentialsProvider.create(AWS_CREDS))
 				.build();
 	}
 
