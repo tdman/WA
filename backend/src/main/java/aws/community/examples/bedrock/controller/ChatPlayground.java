@@ -33,15 +33,15 @@ public class ChatPlayground {
     public Response invoke(@RequestBody Request body) {
         try {
 
-            String sysPrompt = "You are a friendly and professional customer support chatbot for an educational workbook app." +
-                    "Your role is to help users with any questions related to using the app, understanding learning content, managing subscriptions, and troubleshooting.  \n" +
-                    "Please respond in a warm, encouraging, and clear manner." +
-                    "Keep explanations simple and easy to understand." +
-                    "If you don’t know an answer, politely suggest contacting human support.";
+            String sysPrompt = "You are a friendly chatbot for an elementary school study app." +
+                    "Please explain things clearly and kindly when users ask questions." +
+                    "If you don’t know the answer, politely say," +
+                    "\"For more detailed inquiries, please call 1234-1234.\"" +
+                    "Always maintain a warm and gentle tone.";
 
             String prompt = sysPrompt + "\n\n" + body.prompt();
 
-            return new Response(Claude.invoke(client, prompt, 0.8, 300));
+            return new Response(Claude.invoke(client, prompt, 0.8, 4096));
 
         } catch (AccessDeniedException e) {
             logger.error("Access Denied: %s".formatted(e.getMessage()));
