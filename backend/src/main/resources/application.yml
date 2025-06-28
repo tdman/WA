@@ -19,3 +19,8 @@ logging:
   level:
     org.hibernate.engine.jdbc.spi.SqlExceptionHelper: TRACE
     org.hibernate.resource.transaction: TRACE
+
+app:
+  file:
+    users: data/users.json
+    problems: data/problems.json
