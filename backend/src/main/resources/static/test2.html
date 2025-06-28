@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>문제 목록</title>
+    <style>
+        .problem-box {
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin: 10px;
+            border-radius: 8px;
+            max-width: 300px;
+        }
+        .problem-box img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>문제 목록</h1>
+<input type="text" id="test"/><button id="sendBtn">문제 요청</button>
+<div id="problem-list"></div>
+
+<script>
+    const btn = document.getElementById('sendBtn');
+    let fin = false;
+
+    btn.addEventListener('click', () => {
+
+        let val = document.getElementById('test').value.replaceAll(/0-9/g, '');
+        if (val == '' || +val > 100) {
+            alert('요청 문제 갯수를 제대로 입력해주세요 n<100');
+            return;
+        }
+
+        if (fin) {
+            return;
+        }
+
+        document.getElementById('problem-list').innerHTML = '<br>문제 가지고 오는 중.. 기다려주세요';
+
+        fin = true;
+
+        const apiUrl = '/problems/get/' + document.getElementById('test').value;
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                const container = document.getElementById("problem-list");
+                data = data.data;
+                document.getElementById('problem-list').innerHTML = '';
+                data.forEach(problem => {
+                    const box = document.createElement("div");
+                    box.className = "problem-box";
+
+                    const text = document.createElement("p");
+                    text.textContent = problem.content;
+
+                    const img = document.createElement("img");
+                    img.src = "data:image/png;base64," + problem.img;  // 이미지 포맷에 맞게 변경
+
+                    box.appendChild(text);
+                    box.appendChild(img);
+                    container.appendChild(box);
+                });
+
+                fin = false;
+            })
+            .catch(err => {
+                fin = false;
+                alert(`에러 발생: ${err.message}`);
+            });
+    })
+
+
+</script>
+</body>
+</html>

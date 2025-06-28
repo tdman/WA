@@ -10,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.Map;
 
 @RestController
@@ -35,7 +37,12 @@ public class ProblemsController {
             if (ja.length() > probCnt) {
                 JSONArray ja2 = new JSONArray();
                 for (int i = 0; i < probCnt; i++) {
-                    ja2.put(ja.get(i));
+                    JSONObject tmp = (JSONObject)ja.get(i);
+
+                    byte[] img = s3Util.readS3Img("woongae", tmp.getString("img"));
+                    String base64 = Base64.getEncoder().encodeToString(img);
+                    tmp.put("img", img); // Assuming you want to replace the image path with the byte array
+                    ja2.put(tmp);
                 }
                 jo.put("data", ja2);
             }
