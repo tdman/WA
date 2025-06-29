@@ -2,11 +2,8 @@ package aws.community.examples.bedrock.controller;
 
 import aws.community.examples.bedrock.common.CmResponse;
 import aws.community.examples.bedrock.common.CmResponseFactory;
-import aws.community.examples.bedrock.dto.StudentDto;
 import aws.community.examples.bedrock.dto.TutorsDto;
-import aws.community.examples.bedrock.mapper.StudentMapper;
 import aws.community.examples.bedrock.mapper.TutorsMapper;
-import aws.community.examples.bedrock.repository.UsersRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +32,19 @@ public class TutorControllor {
             return CmResponseFactory.success(tutorsMapper.getTutorsList());
         } catch (Exception e) {
             log.error("Error fetching tutors list: ", e);
+            return CmResponseFactory.fail("튜터 정보 조회 실패");
+        }
+    }
+
+    @Description("1튜터 스케줄 정보 조회")
+    @GetMapping("/schedule/{tutorId}")
+    public CmResponse<List<TutorsDto>> getTutorScheduleList(@PathVariable String tutorId) {
+        log.info("Fetching tutor info for ID: {}", tutorId);
+        try {
+            List<TutorsDto> tutorScheduleList = tutorsMapper.getTutorScheduleList(tutorId);
+            return CmResponseFactory.success(tutorScheduleList);
+        } catch (Exception e) {
+            log.error("getTutorInfo err: ", e);
             return CmResponseFactory.fail("튜터 정보 조회 실패");
         }
     }

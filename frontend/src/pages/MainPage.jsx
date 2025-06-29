@@ -52,6 +52,7 @@ function MainPage() {
             color="secondary"
             fullWidth
             sx={{
+              mb: 2, // mb: 2 추가!
               py: 2,
               fontSize: "1.2rem",
               transition: "all 0.3s ease",
@@ -65,6 +66,26 @@ function MainPage() {
           >
             챗봇 이용하기
           </Button>
+
+            <Button
+                variant="contained"
+                color="warning"
+                fullWidth
+                sx={{
+                    py: 2,
+                    fontSize: "1.2rem",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                        backgroundColor: "#fbc02d", // 진한 노랑
+                        transform: "scale(1.05)",
+                        boxShadow: "0 6px 12px rgba(251, 192, 45, 0.6)", // 노랑 그림자
+                    },
+                }}
+                onClick={() => navigate("/tutor")}
+            >
+                튜터 예약하기
+            </Button>
+
         </Box>
       </Box>
     </Container>

@@ -8,5 +8,5 @@ import java.util.List;
 public interface TutorsMapper {
 
     public List<TutorsDto> getTutorsList();
-    public List<TutorsDto> getMyTutorsList();
+    public List<TutorsDto> getTutorScheduleList(String tutorId);
 }

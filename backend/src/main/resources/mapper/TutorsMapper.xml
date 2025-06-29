@@ -6,8 +6,29 @@
 <mapper namespace="aws.community.examples.bedrock.mapper.TutorsMapper">
 
     <select id="getTutorsList" resultType="TutorsDto">
-        select A.*
+        select A.mbti as tutor_mbti, A.*
         from tutors A
         WHERE 1=1
+    </select>
+
+    <select id="getTutorScheduleList" parameterType="java.lang.String" resultType="TutorsDto">
+        <![CDATA[
+        WITH RECURSIVE dates AS (
+        SELECT CURDATE() AS date
+        UNION ALL
+        SELECT date + INTERVAL 1 DAY
+        FROM dates
+        WHERE date + INTERVAL 1 DAY <=CURDATE() + INTERVAL 10 DAY
+        )
+        SELECT A.date as schedule_date, B.tutor_id, B.name,
+               c.student_id, c.schedule_hour, B.mbti AS tutor_mbti,
+               B.email, B.phone
+        FROM dates A
+         JOIN tutors B
+         LEFT JOIN tutors_schedules C
+            on B.tutor_id = C.tutor_id
+            AND A.date = C.schedule_date
+        where B.tutor_id = #{tutorId}
+        ]]>
     </select>
 </mapper>

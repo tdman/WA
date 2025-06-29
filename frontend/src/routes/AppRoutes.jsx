@@ -6,6 +6,8 @@ import MainPage from '../pages/MainPage';
 import ProblemPage from '../pages/ProblemPage';
 import FeedbackPage from '../pages/FeedbackPage';
 import ChatPage from '../pages/ChatPage';
+import TutorPage from '../pages/TutorPage';
+import TutorDetailPage from '../pages/TutorDetailPage';
 
 /**
  * routes/AppRoutes.js - 화면 라우팅 정의
@@ -20,6 +22,8 @@ function AppRoutes() {
       <Route path="/problems" element={<ProblemPage />} />
       <Route path="/feedback" element={<FeedbackPage />} />
       <Route path="/chat" element={<ChatPage />} />
+      <Route path="/tutor" element={<TutorPage />} />
+      <Route path="/tutorDetail/:tutorId" element={<TutorDetailPage />} />
     </Routes>
   );
 }

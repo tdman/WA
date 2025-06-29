@@ -7,7 +7,7 @@
     <select id="getStudentInfo" parameterType="java.lang.String" resultType="aws.community.examples.bedrock.dto.StudentDto">
         select A.*
         from students A
-                 inner join tutors B on (A.tutor_id = B.tutor_id)
+       --           left join tutors B on (A.tutor_id = B.tutor_id)
         where 1=1
           AND A.student_id = #{studentId}
     </select>
