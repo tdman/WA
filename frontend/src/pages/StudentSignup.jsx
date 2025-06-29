@@ -79,15 +79,16 @@ export default function StudentSignup() {
       studentId: form.student_id,
       name: form.name,
       mbti,
-      email: form.email,
-      tutorId: null,
-      create_at: new Date().toISOString(),
-      update_at: new Date().toISOString()
+      email: form.email
     });
-     const userData = res.data;
-  
 
-      navigate('/');
+    const data = res?.data;
+    alert(data?.message);
+    if(!data?.payload) {
+      return false;
+    }
+
+    navigate('/');
   };
 
   const isFormValid = () =>
