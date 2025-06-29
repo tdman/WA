@@ -1,19 +1,22 @@
 package aws.community.examples.bedrock.controller;
 
-import java.util.Map;
-
+import aws.community.examples.bedrock.common.CmResponse;
+import aws.community.examples.bedrock.common.CmResponseFactory;
+import aws.community.examples.bedrock.dto.StudentDto;
+import aws.community.examples.bedrock.dto.TutorsDto;
+import aws.community.examples.bedrock.mapper.StudentMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Description;
+import org.springframework.web.bind.annotation.*;
 
 import aws.community.examples.bedrock.dto.StudentRequest;
 import aws.community.examples.bedrock.dto.StudentResponse;
 import aws.community.examples.bedrock.service.StudentService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/students")
@@ -23,6 +26,9 @@ public class StudentController {
     private static final Logger log = LoggerFactory.getLogger(StudentController.class);
 
     private final StudentService studentService;
+
+    @Autowired
+    StudentMapper studentMapper;
 
     @PostMapping("/test")
     public StudentResponse createStudent(@RequestBody StudentRequest request) {
@@ -36,4 +42,17 @@ public class StudentController {
        }
        return response;
     }
+
+    @Description("한 학생에 대한 정보 조회")
+    @GetMapping("/get/{studentId}")
+    public CmResponse<StudentDto> getStudentInfo(@PathVariable String studentId) {
+        log.info("Fetching student info for ID: {}", studentId);
+        try {
+            return CmResponseFactory.success(studentMapper.getStudentInfo(studentId));
+        } catch (Exception e) {
+            log.error("getStudentInfo err: ", e);
+            return CmResponseFactory.fail("학생 정보 조회 실패");
+        }
+    }
+
 }

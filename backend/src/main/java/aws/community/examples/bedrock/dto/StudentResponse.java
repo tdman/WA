@@ -3,6 +3,9 @@ package aws.community.examples.bedrock.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor

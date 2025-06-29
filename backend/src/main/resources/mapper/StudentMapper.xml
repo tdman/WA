@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="aws.community.examples.bedrock.mapper.StudentMapper">
+    <select id="getStudentInfo" parameterType="java.lang.String" resultType="aws.community.examples.bedrock.dto.StudentDto">
+        select A.*
+        from students A
+                 inner join tutors B on (A.tutor_id = B.tutor_id)
+        where 1=1
+          AND A.student_id = #{studentId}
+    </select>
+</mapper>

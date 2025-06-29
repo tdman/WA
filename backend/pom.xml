@@ -95,6 +95,13 @@
 			<version>8.0.33</version> <!-- 최신 안정 버전 확인해서 변경 가능 -->
 		</dependency>
 
+		<!-- MyBatis -->
+		<dependency>
+			<groupId>org.mybatis.spring.boot</groupId>
+			<artifactId>mybatis-spring-boot-starter</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+
 
 		<!-- PostgreSQL JDBC 드라이버 -->
 		<dependency>

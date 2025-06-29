@@ -25,7 +25,7 @@ public class ProblemsController {
     S3Util s3Util;
 
     @GetMapping("/get/{cnt}")
-    public Map<String, Object> getAllProbs(@PathVariable String cnt) {
+    public CmResponse<Map<String, Object>> getAllProbs(@PathVariable String cnt) {
         try {
             int probCnt = Integer.parseInt(cnt);
 
@@ -46,11 +46,11 @@ public class ProblemsController {
                 }
                 jo.put("data", ja2);
             }
-//return CmResponseFactory.success(jo.toMap());
-            return jo.toMap();
+return CmResponseFactory.success(jo.toMap());
+//            return jo.toMap();
         } catch (Exception e) {
-            return Map.of();
-//            return CmResponseFactory.fail("Error reading probs info: " + e.getMessage());
+//            return Map.of();
+            return CmResponseFactory.fail("Error reading probs info: " + e.getMessage());
         }
     }
 }

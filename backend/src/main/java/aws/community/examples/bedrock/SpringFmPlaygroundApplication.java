@@ -1,5 +1,6 @@
 package aws.community.examples.bedrock;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.bedrock.BedrockClient;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
 
+@MapperScan(basePackages = "aws.community.examples.bedrock.mapper")
 @SpringBootApplication
 public class SpringFmPlaygroundApplication {
 
