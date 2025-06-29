@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="aws.community.examples.bedrock.mapper.QuestionMapper">
+
+    <select id="searchQuestions" resultType="aws.community.examples.bedrock.dto.QuestionSearchResponse">
+        SELECT
+            question_id
+            , subject_type
+            , difficulty
+            , question_content
+            , explanation
+            , question_type
+            , tags
+            , avg_solve_time_sec
+            , image_url
+        FROM questions
+        <where>
+            <if test="subjectType != null and subjectType != ''">
+                AND subject_type = #{subjectType}
+            </if>
+            <if test="difficulty != null and difficulty != ''">
+                AND difficulty = #{difficulty}
+            </if>
+            <if test="questionType != null and questionType != ''">
+                AND question_type = #{questionType}
+            </if>
+        </where>
+        ORDER BY RAND()
+        LIMIT #{count}
+    </select>
+
+</mapper>
