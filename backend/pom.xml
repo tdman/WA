@@ -5,8 +5,8 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.5</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.2.5</version> <!-- 최신 안정 버전 -->
+		<relativePath/>
 	</parent>
 	<groupId>aws.community.examples</groupId>
 	<artifactId>spring-fm-playground</artifactId>
@@ -83,16 +83,10 @@
 			<artifactId>postgresql</artifactId>
 			<version>42.7.3</version> <!-- 최신 안정 버전 확인 후 변경 가능 -->
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.18.30</version> <!-- 안정 최신 버전 -->
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
