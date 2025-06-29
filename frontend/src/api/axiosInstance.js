@@ -3,7 +3,7 @@ import axios from 'axios';
 // 전역 API 기본 URL 설정
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:55500', // ← 필요한 경우 /api 생략 가능
-  timeout: 5000,
+  // timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -48,5 +48,73 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+
+
+// === API 함수 모음 STR === //
+
+// 0. 테스트
+export const conversation = (req) => {
+  return axiosInstance.post('/chat/support/conversation', req);
+};
+
+// 1. 로그인(사용)
+export const loginUser = (req) => {
+  return axiosInstance.post('/login', req);
+};
+
+// 2. 회원가입(사용)
+export const Signup = (req) => {
+  return axiosInstance.post('/auth/signup', req);
+};
+
+// 2. 랜덤 문제 5개
+export const fetchRandomProblems = (req) => {
+  return axiosInstance.get('/problems/random');
+};
+
+// 3. 문제 결과 저장
+export const submitResults = (req) => {
+  return axiosInstance.post('/results/submit', req);
+};
+
+// 4. 피드백 생성
+export const generateFeedback = (req) => {
+  return axiosInstance.post('/feedback/generate', req);
+};
+
+// 5. 피드백 리포트 조회
+export const getFeedbackReport = (req) => {
+  return axiosInstance.get(`/feedback/report/${req}`);
+};
+
+// 6. 챗봇 질문
+export const askChatbot = (req) => {
+  return axiosInstance.post('/chatbot/ask', req);
+};
+
+// 7. 차트 데이터
+export const getChartData = (req) => {
+  return axiosInstance.get(`/results/chart/${req}`);
+};
+
+// 8. 메일 전송
+export const sendParentMail = (req) => {
+  return axiosInstance.post('/mail/send', req);
+};
+
+// 9. 튜터 스케줄 조회
+export const getTutorSchedule = (req) => {
+  return axiosInstance.get('/tutor/schedule', req);
+};
+
+// 10. 튜터 예약
+export const reserveTutor = (req) => {
+  return axiosInstance.post('/tutor/reserve', req);
+};
+
+
+// === API 함수 모음 END === //
+
 
 export default axiosInstance;

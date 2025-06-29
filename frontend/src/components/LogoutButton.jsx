@@ -1,13 +1,17 @@
 // src/components/LogoutButton.jsx
-import React from "react";
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
+import { UserContext } from '../context/UserContext';
 
 function LogoutButton() {
+  const { user, login, logout } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     // 로그아웃 처리 (예: 토큰 삭제, 상태 초기화 등)
+
+    logout({});
     navigate("/");
   };
 
