@@ -15,7 +15,7 @@ public class QuestionSearchRequest {
     private String difficulty;  // type 모드에서 사용
     //    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate createdAt;          // mode=wrong일 때 선택
+    private LocalDate since;    // updated_at 조건 검색
 
 
 

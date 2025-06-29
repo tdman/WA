@@ -16,20 +16,52 @@
             , tags
             , avg_solve_time_sec
             , image_url
+            , updated_at
         FROM questions
         <where>
-            <if test="subjectType != null and subjectType != ''">
-                AND subject_type = #{subjectType}
-            </if>
+            <!-- 공통 조건 -->
             <if test="difficulty != null and difficulty != ''">
                 AND difficulty = #{difficulty}
             </if>
-            <if test="questionType != null and questionType != ''">
+            <!-- mode 가 type 일 때만 subjectType 필터 적용 -->
+            <if test="mode == 'type' and subjectType != null and subjectType != ''">
+                AND subject_type = #{subjectType}
+            </if>
+            <!-- mode 가 type 일 때만 questionType 필터 적용 -->
+            <if test="mode == 'type' and questionType != null and questionType != ''">
                 AND question_type = #{questionType}
+            </if>
+            <!-- (컨셉: 최신문제조회) -->
+            <if test="since != null and since != ''">
+                AND updated_at >= #{since}
             </if>
         </where>
         ORDER BY RAND()
+        <if test="count != null and count != ''">
         LIMIT #{count}
+        </if>
     </select>
+
+    <select id="selectTodayMaxSequence" resultType="int">
+        SELECT
+            COALESCE(MAX(CAST(SUBSTRING_INDEX(attempt_id, '-', -1) AS UNSIGNED)), 0)
+        FROM question_results
+        WHERE student_id = #{studentId}
+          AND attempt_id LIKE CONCAT(#{date}, '-', #{studentId}, '-%')
+    </select>
+
+    <insert id="insertQuestionResult" parameterType="aws.community.examples.bedrock.dto.SaveQuestionResultRequest"
+            useGeneratedKeys="true" keyProperty="resultId">
+        INSERT INTO question_results (
+            student_id, attempt_id, question_id,
+            result_answer, result_time_sec,
+            result_is_marked
+        ) VALUES (
+                     #{studentId}, #{attemptId}, #{questionId},
+                     #{resultAnswer}, #{resultTimeSec},
+                     #{resultIsMarked}
+                 )
+    </insert>
+
 
 </mapper>

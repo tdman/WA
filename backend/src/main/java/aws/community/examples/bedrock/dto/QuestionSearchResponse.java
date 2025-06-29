@@ -9,9 +9,9 @@ public class QuestionSearchResponse {
     private String questionContent;
     private String difficulty;
     private String questionType;
-    private String answer;
     private String explanation;
     private String imageUrl;
     private String tags;
     private String avgSolveTimeSec;
+    private String updatedAt;
 }

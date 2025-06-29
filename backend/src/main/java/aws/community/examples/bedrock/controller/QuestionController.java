@@ -2,15 +2,14 @@ package aws.community.examples.bedrock.controller;
 
 import aws.community.examples.bedrock.dto.QuestionSearchRequest;
 import aws.community.examples.bedrock.dto.QuestionSearchResponse;
+import aws.community.examples.bedrock.dto.SaveQuestionResultRequest;
 import aws.community.examples.bedrock.service.QuestionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -24,6 +23,19 @@ public class QuestionController {
     @PostMapping("/search")
     public List<QuestionSearchResponse> searchQuestions(@RequestBody QuestionSearchRequest request) {
         return questionService.searchQuestions(request);
+    }
+
+    // StudentController 에 만들고 싶은데 Student 쪽에는 ServiceImpl 이 없어서 임시로 이쪽에 생성함
+    @PostMapping("/{studentId}/results")
+    public Map<String, Object> saveResults(
+            @PathVariable String studentId,
+            @RequestBody List<SaveQuestionResultRequest> requestList
+    ) {
+        String attemptId = questionService.saveQuestionResults(studentId, requestList);
+        return Map.of(
+                "message", "문제 결과 저장 완료",
+                "resultId", attemptId
+        );
     }
 
 }

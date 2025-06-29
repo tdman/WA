@@ -3,20 +3,16 @@ package aws.community.examples.bedrock.controller;
 import aws.community.examples.bedrock.common.CmResponse;
 import aws.community.examples.bedrock.common.CmResponseFactory;
 import aws.community.examples.bedrock.dto.StudentDto;
-import aws.community.examples.bedrock.dto.TutorsDto;
+import aws.community.examples.bedrock.dto.StudentRequest;
+import aws.community.examples.bedrock.dto.StudentResponse;
 import aws.community.examples.bedrock.mapper.StudentMapper;
+import aws.community.examples.bedrock.service.StudentService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.web.bind.annotation.*;
-
-import aws.community.examples.bedrock.dto.StudentRequest;
-import aws.community.examples.bedrock.dto.StudentResponse;
-import aws.community.examples.bedrock.service.StudentService;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/students")
