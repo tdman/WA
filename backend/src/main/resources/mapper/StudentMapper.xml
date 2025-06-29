@@ -11,4 +11,24 @@
         where 1=1
           AND A.student_id = #{studentId}
     </select>
+    <select id="getLogin" parameterType="java.lang.String" resultType="StudentDto">
+        select A.*
+        from students A
+        where 1=1
+          AND A.student_id = #{studentId}
+    </select>
+    <insert id="saveStudent" parameterType="StudentDto">
+		insert into students
+		( 	  student_id
+			, name
+			, mbti
+			, email
+		)
+		values(
+			  #{studentId}
+			, #{name}
+			, #{mbti}
+			, #{email}
+		)
+    </insert>
 </mapper>

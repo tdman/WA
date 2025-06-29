@@ -76,10 +76,11 @@ export default function StudentSignup() {
    
     //  서버 전송 처리
     const res = await Signup({
-      student_id: form.student_id,
+      studentId: form.student_id,
       name: form.name,
-      email: form.email,
       mbti,
+      email: form.email,
+      tutorId: null,
       create_at: new Date().toISOString(),
       update_at: new Date().toISOString()
     });

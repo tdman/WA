@@ -1,24 +1,34 @@
 package aws.community.examples.bedrock.controller;
 
+import aws.community.examples.bedrock.common.CmResponse;
+import aws.community.examples.bedrock.common.CmResponseFactory;
 import aws.community.examples.bedrock.dto.StudentDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import aws.community.examples.bedrock.mapper.StudentMapper;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-	private static final Logger log = LoggerFactory.getLogger(AuthController.class);
-
+    @Autowired
+    StudentMapper studentMapper;
+    
 	@PostMapping("/signup")
-	public StudentDto signup(@RequestBody StudentDto request) {
-		//TODO 오희진 로직작성 필요
-		StudentDto result = new StudentDto();
-		result.setStudentId(request.getStudentId());
-		result.setName("오히디니");
-		log.info("TEST [{}]", "끼히히히히히");
-		return result;
+	public CmResponse<StudentDto> signup(@RequestBody StudentDto request) {
+
+		try {
+			int result = studentMapper.saveStudent(request);
+            return CmResponseFactory.success(request);
+          
+        } catch (Exception e) {
+            log.error("AuthController signup : ", e);
+            return CmResponseFactory.fail("학생 등록 실패");
+        }
+		
 	}
 
 }

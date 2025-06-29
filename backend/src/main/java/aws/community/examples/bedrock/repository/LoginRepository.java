@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import aws.community.examples.bedrock.dto.Users;
 
-public interface LoginRepository extends JpaRepository<Users, Long> {
+public interface LoginRepository{
 
 }

@@ -11,6 +11,7 @@ function LoginPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("????",user)
     if (user) navigate('/main');
   }, []);
 
@@ -21,7 +22,12 @@ function LoginPage() {
     try {
       //서버전송
       const res = await loginUser({ studentId });
-      const userData = res.data;
+      const userData = res?.data?.payload;
+      
+      if(!userData) {
+        alert('로그인 실패:');
+        return false;
+      } 
 
       //로컬스토리지저장
       login({
@@ -30,8 +36,10 @@ function LoginPage() {
       });
 
       navigate('/main');
+      
     } catch (err) {
       console.error('로그인 실패:', err);
+      alert('로그인 실패:');
     }
   };
 
