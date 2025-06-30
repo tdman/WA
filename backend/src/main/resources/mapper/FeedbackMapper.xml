@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="aws.community.examples.bedrock.mapper.FeedbackMapper">
+    <select id="findResultsForPastWeek" resultType="aws.community.examples.bedrock.domain.StudyResult">
+        SELECT
+            qr.student_id,
+            q.subject_type,
+            q.question_type,
+            qr.result_is_correct,
+            qr.result_time_sec
+        FROM question_results qr
+        join questions q on qr.question_id = q.question_id
+        WHERE qr.student_id = #{studentId}
+          AND qr.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+    </select>
+</mapper>
