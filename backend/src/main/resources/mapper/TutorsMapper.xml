@@ -22,7 +22,7 @@
         )
         SELECT A.date as schedule_date, B.tutor_id, B.name,
                c.student_id, c.schedule_hour, B.mbti AS tutor_mbti,
-               B.email, B.phone
+               B.email, B.phone, B.profile_img
         FROM dates A
          JOIN tutors B
          LEFT JOIN tutors_schedules C

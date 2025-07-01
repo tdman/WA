@@ -14,4 +14,6 @@ public class TutorsDto {
     private String studentMbti;
     private String scheduleDate;
     private String scheduleHour;
+    private String profileImg;
+    private String profileImgBytes;
 }

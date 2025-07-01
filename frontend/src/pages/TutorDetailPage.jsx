@@ -22,6 +22,7 @@ function TutorDetailPage() {
                 if (data && data.payload && data.payload.length > 0) {
                     setSchedules(data.payload);
                     setTutorInfo({
+                        profileImgBytes: data.payload[0].profileImgBytes,
                         name: data.payload[0].name,
                         mbti: data.payload[0].tutorMbti,
                         email: data.payload[0].email,
@@ -54,14 +55,46 @@ function TutorDetailPage() {
                 <BackButton />
                 <LogoutButton />
             </Box>
-            <Paper sx={{ p: 4, mt: 4, mb: 4 }}>
-                <Typography variant="h5" gutterBottom>
-                    📝 튜터 상세 정보
-                </Typography>
-                <Typography><b>이름:</b> {tutorInfo.name}</Typography>
-                <Typography><b>MBTI:</b> {tutorInfo.mbti}</Typography>
-                <Typography><b>Email:</b> {tutorInfo.email}</Typography>
-                <Typography><b>Phone:</b> {tutorInfo.phone}</Typography>
+            <Paper sx={{ p: 4, mt: 4, mb: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                {tutorInfo.profileImgBytes ? (
+                    <img
+                        src={`data:image/png;base64,${tutorInfo.profileImgBytes}`}
+                        alt="프로필"
+                        style={{
+                            width: 128,
+                            height: 128,
+                            borderRadius: 16,
+                            objectFit: "cover",
+                            boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+                        }}
+                    />
+                ) : (
+                    <Box
+                        sx={{
+                            width: 128,
+                            height: 128,
+                            borderRadius: 2,
+                            bgcolor: "#eee",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#bdbdbd",
+                            fontSize: 32,
+                            border: "2px dashed #bdbdbd"
+                        }}
+                    >
+                        ?
+                    </Box>
+                )}
+                <Box>
+                    <Typography variant="h5" gutterBottom>
+                        📝 튜터 상세 정보
+                    </Typography>
+                    <Typography><b>이름:</b> {tutorInfo.name}</Typography>
+                    <Typography><b>MBTI:</b> {tutorInfo.mbti}</Typography>
+                    <Typography><b>Email:</b> {tutorInfo.email}</Typography>
+                    <Typography><b>Phone:</b> {tutorInfo.phone}</Typography>
+                </Box>
             </Paper>
             <Typography variant="h6" gutterBottom>
                 예약 현황
