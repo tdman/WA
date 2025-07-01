@@ -46,7 +46,7 @@ function MainPage() {
                     >
                         문제풀이 시작
                     </Button>
-
+                    {/* // 챗봇 메뉴 임시 주석 플로팅 버튼
                     <Button
                         variant="contained"
                         color="secondary"
@@ -66,7 +66,7 @@ function MainPage() {
                     >
                         챗봇 이용하기
                     </Button>
-
+                    */}
                     <Button
                         variant="contained"
                         color="warning"

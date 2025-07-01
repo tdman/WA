@@ -134,9 +134,8 @@ public class ChatService {
             아래는 서비스의 전체 메뉴 정보입니다:
             %s
             
-            사용자가 "%s"라고 했을 때, 가장 적합한 메뉴가이 있다면 아래 예시처럼 답변에 포함시켜 줘.
-            관련 있는 메뉴 없으면, 답변에 메뉴 정보 포함하지 마.
-            예시: [메뉴 이름](localhost:3000/screenPath)
+            사용자가 "%s"라고 했을 때, 사용자 질의에 적합한 메뉴가 있다면 "[메뉴 이름](localhost:3000/screenPath)" 이렇게 답변에 포함시켜 줘.
+            관련 있는 메뉴가 없으면, 절대 메뉴 정보를 답변에 포함하지 마.
             """.formatted(context, userInput);
 
         return menuRecommend;
