@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="aws.community.examples.bedrock.mapper.FeedbackMapper">
+<mapper namespace="aws.community.examples.bedrock.mapper.ProgressMapper">
     <select id="findResultsForPastWeek" resultType="aws.community.examples.bedrock.domain.StudyResult">
         SELECT
             qr.student_id,

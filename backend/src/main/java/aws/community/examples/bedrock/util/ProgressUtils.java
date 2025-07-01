@@ -1,13 +1,13 @@
 package aws.community.examples.bedrock.util;
 
-import aws.community.examples.bedrock.domain.FeedbackStats;
+import aws.community.examples.bedrock.domain.ProgressStats;
 import aws.community.examples.bedrock.domain.StudyResult;
 
 import java.util.*;
 
-public class FeedbackUtils {
+public class ProgressUtils {
 
-    public static FeedbackStats analyzeResults(List<StudyResult> results) {
+    public static ProgressStats analyzeResults(List<StudyResult> results) {
         // 간단한 통계 계산: 정답률, 과목별 성과, 취약 유형 등
         Map<String, Integer> correctCount = new HashMap<>();
         Map<String, Integer> totalCount = new HashMap<>();
@@ -30,10 +30,10 @@ public class FeedbackUtils {
         int avgSolveTimeSec = 13;   // TEST
         List<String> weakTags = Arrays.asList("수학_도형", "과학_역학", "사회_경제");   // TEST
 
-        return new FeedbackStats(correctCount, totalCount, weakestType, accuracyPercent, avgSolveTimeSec, weakTags);
+        return new ProgressStats(correctCount, totalCount, weakestType, accuracyPercent, avgSolveTimeSec, weakTags);
     }
 
-    public static String buildPrompt(FeedbackStats stats) {
+    public static String buildPrompt(ProgressStats stats) {
         // 주석은 처음 작석했던 코드
 //        StringBuilder prompt = new StringBuilder();
 //        prompt.append("아래는 학습자의 1주일간 학습 결과입니다. 자연어로 피드백을 3문장 이내로 생성해주세요.\n\n");

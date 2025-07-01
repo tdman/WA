@@ -7,6 +7,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
-public interface FeedbackMapper {
+public interface ProgressMapper {
     List<StudyResult> findResultsForPastWeek(@Param("studentId") String studentId);
 }

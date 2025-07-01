@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Data
 @AllArgsConstructor
-public class FeedbackStats {
+public class ProgressStats {
     // 유형별 정답 수
     private Map<String, Integer> correctCount;
 

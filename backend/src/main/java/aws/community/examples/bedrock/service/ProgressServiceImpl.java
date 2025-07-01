@@ -1,10 +1,10 @@
 package aws.community.examples.bedrock.service;
 
-import aws.community.examples.bedrock.domain.FeedbackStats;
+import aws.community.examples.bedrock.domain.ProgressStats;
 import aws.community.examples.bedrock.domain.StudyResult;
 import aws.community.examples.bedrock.external.BedrockAiClient;
-import aws.community.examples.bedrock.mapper.FeedbackMapper;
-import aws.community.examples.bedrock.util.FeedbackUtils;
+import aws.community.examples.bedrock.mapper.ProgressMapper;
+import aws.community.examples.bedrock.util.ProgressUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,20 +12,20 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class FeedbackServiceImpl implements FeedbackService {
-    private final FeedbackMapper feedbackMapper;
+public class ProgressServiceImpl implements ProgressService {
+    private final ProgressMapper progressMapper;
     private final BedrockAiClient bedrockClient;
 
         @Override
-        public String generateFeedback(String studentId) {
+        public String generateProgress(String studentId) {
             // 1. 최근 1주일 학습 결과 조회
-            List<StudyResult> results = feedbackMapper.findResultsForPastWeek(studentId);
+            List<StudyResult> results = progressMapper.findResultsForPastWeek(studentId);
 
             // 2. 통계 계산 (예시)
-            FeedbackStats stats = FeedbackUtils.analyzeResults(results);
+            ProgressStats stats = ProgressUtils.analyzeResults(results);
 
             // 3. Prompt 구성
-            String prompt = FeedbackUtils.buildPrompt(stats);
+            String prompt = ProgressUtils.buildPrompt(stats);
 
             // 4. Bedrock 호출
             return bedrockClient.getTextResponse(prompt);
