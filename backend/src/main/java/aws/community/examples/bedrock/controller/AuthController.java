@@ -39,7 +39,7 @@ public class AuthController {
 	}
 
     @Description("최근 1주일 학습내용 기반 피드백 확인")
-    @GetMapping("/{studentId}/progress")
+    @PostMapping("/{studentId}/progress")
     public ResponseEntity<String> getProgress(@PathVariable String studentId) {
         String progress = progressService.generateProgress(studentId);
         return ResponseEntity.ok(progress);
