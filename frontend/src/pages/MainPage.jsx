@@ -67,24 +67,46 @@ function MainPage() {
             챗봇 이용하기
           </Button>
 
-            <Button
-                variant="contained"
-                color="warning"
-                fullWidth
-                sx={{
-                    py: 2,
-                    fontSize: "1.2rem",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                        backgroundColor: "#fbc02d", // 진한 노랑
-                        transform: "scale(1.05)",
-                        boxShadow: "0 6px 12px rgba(251, 192, 45, 0.6)", // 노랑 그림자
-                    },
-                }}
-                onClick={() => navigate("/tutor")}
-            >
-                튜터 예약하기
-            </Button>
+          <Button
+            variant="contained"
+            color="warning"
+            fullWidth
+            sx={{
+              mb: 2, // mb: 2 추가!
+              py: 2,
+              fontSize: "1.2rem",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                backgroundColor: "#fbc02d", // 진한 노랑
+                transform: "scale(1.05)",
+                boxShadow: "0 6px 12px rgba(251, 192, 45, 0.6)", // 노랑 그림자
+              },
+            }}
+            onClick={() => navigate("/tutor")}
+          >
+            튜터 예약하기
+          </Button>
+
+
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{
+              mb: 2,
+              py: 2,
+              fontSize: "1.2rem",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                backgroundColor: "#1565c0",
+                transform: "scale(1.05)",
+                boxShadow: "0 6px 12px rgba(21, 101, 192, 0.6)",
+              },
+            }}
+            onClick={() => navigate("/feedback")}
+          >
+            피드백임시페이지
+          </Button>
 
         </Box>
       </Box>

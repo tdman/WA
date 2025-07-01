@@ -58,12 +58,12 @@ export const conversation = (req) => {
   return axiosInstance.post('/chat/support/conversation', req);
 };
 
-// 1. 로그인(사용)
+// 1. 로그인(사용 - 오희진)
 export const loginUser = (req) => {
   return axiosInstance.post('/login', req);
 };
 
-// 2. 회원가입(사용)
+// 2. 회원가입(사용 - 오희진)
 export const Signup = (req) => {
   return axiosInstance.post('/auth/signup', req);
 };
@@ -83,9 +83,9 @@ export const generateFeedback = (req) => {
   return axiosInstance.post('/feedback/generate', req);
 };
 
-// 5. 피드백 리포트 조회
-export const getFeedbackReport = (req) => {
-  return axiosInstance.get(`/feedback/report/${req}`);
+// 5. 문제풀이 결과 피드백 조회 (사용 - 오희진)
+export const getQuestionFeedback = (req) => {
+  return axiosInstance.post('question/feedback', req);
 };
 
 // 6. 챗봇 질문
