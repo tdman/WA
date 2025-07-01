@@ -5,6 +5,8 @@ import aws.community.examples.bedrock.dto.ChatRequest;
 import aws.community.examples.bedrock.dto.ChatResponse;
 import aws.community.examples.bedrock.dto.ScreenRoutesDto;
 import aws.community.examples.bedrock.mapper.ScreenRoutesMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
@@ -24,13 +26,16 @@ public class ChatService {
     ScreenRoutesMapper screenRoutesMapper;
 
     private final BedrockRuntimeClient client;
+    private final StudentService studentService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public ChatService(final BedrockRuntimeClient client) {
+    public ChatService(final BedrockRuntimeClient client, StudentService studentService) {
         this.client = client;
+        this.studentService = studentService;
     }
 
-    public ChatResponse getResponse(ChatRequest request) {
+    public ChatResponse getResponse(ChatRequest request, String studentId) throws JsonProcessingException {
         String sessionId = request.getSessionId();  // 사용자 세션별 구분
         String userInput = request.getMessage();
 
@@ -46,7 +51,47 @@ public class ChatService {
         String claudeResponse = Claude.invoke(client, prompt, 0.3, 4096);
         history.add("[챗봇]: " + claudeResponse);
 
-        return new ChatResponse(claudeResponse);
+        ChatResponse dto = objectMapper.readValue(claudeResponse, ChatResponse.class);
+
+        // 필수 정보 설정
+        dto.setStudentId(studentId);
+
+        // intent 기반 분기 처리
+        String reply;
+        if (dto.getIntent() != null &&
+                (dto.getIntent().startsWith("update") || dto.getIntent().startsWith("change"))) {
+
+            if (dto.getField() == null || dto.getValue() == null) {
+                reply = dto.getReply();
+            } else {
+                boolean result = studentService.updateUserField(
+                        studentId,
+                        dto.getField(),
+                        dto.getValue()
+                );
+                reply = result
+                        ? (dto.getReply() != null ? dto.getReply() : "정보가 성공적으로 변경되었습니다.")
+                        : "정보를 업데이트할 수 없습니다.";
+            }
+
+        } else {
+            reply = dto.getReply();
+            if (reply == null) reply = dto.getResponse();
+            if (reply == null) reply = dto.getGreeting();
+            if (reply == null) reply = "어떤 도움이 필요하신가요?";
+        }
+
+        System.out.println("Claude 응답: " + claudeResponse);
+
+        // 최종 응답 생성
+        ChatResponse response = new ChatResponse();
+        response.setReply(reply);
+        response.setIntent(dto.getIntent());
+        response.setField(dto.getField());
+        response.setValue(dto.getValue());
+        response.setStudentId(dto.getStudentId());
+
+        return response;
     }
 
     private String buildPrompt(List<String> history) {
@@ -56,6 +101,19 @@ public class ChatService {
                 "이전 대화 맥락을 기억하고, 질문에 바로 답변해." +
                 "이전 프롬프트 내용을 답변에 그대로 서술하지 마." +
                 "답을 모를 때는 모른다고 정중하게 사과하고 \"자세한 문의는 02-123-1234로 전화 주세요.\"라고 대답해." +
+                "다음 사용자 요청에 대해 JSON으로 응답해줘. 문자열 안의 줄바꿈은 반드시 \\\\n 으로 이스케이프 처리해줘." +
+                "그리고 사용자가 정보를 바꿔달라고 요청하면 intent, field, value 를 JSON 형식으로 추출해줘." +
+                "형식은 이렇게 해주면 돼. " +
+                "형식: {\"intent\": \"...\", \"field\": \"...\", \"value\": \"...\"}" +
+                "만약 사용자의 의도가 \"update_user_info\"인데 field나 value가 빠져 있을 경우, \n" +
+                "reply 필드에 \"어떤 정보를 변경하실 건가요?\", \"어떤 값으로 바꾸고 싶으신가요?\"와 같은 질문을 작성해줘." +
+                "반드시 아래 JSON 포맷으로 응답해:" +
+                "{\n" +
+                "  \"intent\": \"update_user_info\" | \"etc\",\n" +
+                "  \"field\": \"변경 대상 필드 (예: phone, email, address)\" | null,\n" +
+                "  \"value\": \"변경할 값\" | null,\n" +
+                "  \"reply\": \"사용자에게 보여줄 답변 문장\"\n" +
+                "}" +
                 "아래는 사용자와 당신의 대화입니다.\n\n");
 
         for (String line : history) {

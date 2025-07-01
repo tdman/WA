@@ -13,4 +13,5 @@ public interface StudentMapper {
     public StudentDto getLogin (String studentId);
     public int saveStudent (StudentDto dto);
     public List<StudentDto> getMyTutorsList();
+    public void updateStudent(StudentDto dto);
 }
