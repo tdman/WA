@@ -68,6 +68,7 @@ public class ChatService {
     private String buildMenuInfo(String userInput) {
         screenRoutes.computeIfAbsent("screenRoutes", k -> screenRoutesMapper.getScreenRoutes());
         String context = screenRoutes.get("screenRoutes").stream()
+                .filter(dto -> !"/chat".equals(dto.getScreenPath())) // "/chat" 경로는 제외
                 .map(ScreenRoutesDto::toString)
                 .collect(java.util.stream.Collectors.joining("\n"));
 
@@ -75,8 +76,8 @@ public class ChatService {
             아래는 서비스의 전체 메뉴 정보입니다:
             %s
             
-            사용자가 "%s"라고 했을 때, 가장 적합한 screenPath이 있다면 연결 링크 형식으로, 적합한 screenPath만 답변에 포함시켜 줘
-            없으면 답변에 관련 정보 포함하지 마.
+            사용자가 "%s"라고 했을 때, 가장 적합한 메뉴가이 있다면 아래 예시처럼 답변에 포함시켜 줘.
+            관련 있는 메뉴 없으면, 답변에 메뉴 정보 포함하지 마.
             예시: [메뉴 이름](localhost:3000/screenPath)
             """.formatted(context, userInput);
 
