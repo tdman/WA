@@ -7,13 +7,12 @@ import { UserContext } from '../context/UserContext';
 function LoginPage() {
   const [studentId, setStudentId] = useState('');
   const [submitClicked, setSubmitClicked] = useState(false);
-  const { user, login, logout } = useContext(UserContext);
+  const { user, login, logout, isLoggedIn, isLoading } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("????",user)
-    if (user) navigate('/main');
-  }, []);
+    if (isLoggedIn) navigate('/main');
+  }, [isLoggedIn]);
 
   const handleLogin = async () => {
     setSubmitClicked(true);
