@@ -1,6 +1,8 @@
 package aws.community.examples.bedrock.controller;
 
 import aws.community.examples.bedrock.aimodels.Claude;
+import aws.community.examples.bedrock.dto.ScreenRoutesDto;
+import aws.community.examples.bedrock.mapper.ScreenRoutesMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +25,7 @@ import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelResponse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static aws.community.examples.bedrock.aimodels.LLM.Request;
 import static aws.community.examples.bedrock.aimodels.LLM.Response;
@@ -31,7 +34,7 @@ import static aws.community.examples.bedrock.aimodels.LLM.Response;
 @RequestMapping("/chat/support/")
 public class ChatPlayground {
 
-    private final String SYS_PROMPT = "You are a friendly chatbot for an elementary school study app." +
+    private final String SYS_PROMPT = "You are a friendly chatbot for study app." +
             "Please explain things clearly and kindly when users ask questions." +
             "If you don’t know the answer, politely say," +
             "\"For more detailed inquiries, please call 1234-1234.\"" +
@@ -45,6 +48,12 @@ public class ChatPlayground {
     public ChatPlayground(final BedrockRuntimeClient client) {
         this.client = client;
     }
+
+    @Autowired
+    ScreenRoutesMapper screenRoutesMapper;
+
+    // 예시: 메뉴 정보 캐싱
+    private final Map<String, List<ScreenRoutesDto>> screenRoutes = new ConcurrentHashMap<>();
 
     //@Autowired
     //public
@@ -65,7 +74,9 @@ public class ChatPlayground {
     }
 
     @PostMapping("/test")
-    public Response classifyIntentWithClaude(String userQuestion) throws Exception {
+    public Response classifyIntentWithClaude(@RequestBody Request body) throws Exception {
+
+        String userQuery = body.prompt();
         String prompt = """
         다음 사용자 질문이 있습니다:
 
@@ -77,55 +88,45 @@ public class ChatPlayground {
         - 데이터 분석 요청이면: "분석"
 
         대답은 "정보" 또는 "분석" 둘 중 하나만 해주세요.
-        """.formatted(userQuestion);
+        """.formatted(userQuery);
 
-        Map<String, Object> body = Map.of(
-                "messages", List.of(
-                        Map.of("role", "user", "content", prompt)
-                ),
-                "max_tokens", 10,
-                "temperature", 0.0
-        );
+        String fstResult =  Claude.invoke(client, prompt, 0.3, 4096);;
 
-        ObjectMapper mapper = new ObjectMapper();
-        String requestJson = mapper.writeValueAsString(body);
+        logger.info(" @@@@@@@@@@ Claude classification result: {}", fstResult);
+       // return runSimpleQuery(userQuestion);
+        return runRdbAnalysis(userQuery);
+/*        if ("분석".equals(fstResult)) {
 
-        InvokeModelRequest request = InvokeModelRequest.builder()
-                .modelId("anthropic.claude-3-sonnet-20240229-v1:0")
-                .contentType("application/json")
-                .body(SdkBytes.fromUtf8String(requestJson))
-                .build();
-
-        BedrockRuntimeClient client = BedrockRuntimeClient.create();
-        InvokeModelResponse response = client.invokeModel(request);
-
-        String rawResponse = response.body().asUtf8String();
-        String ret = parseLLMClassification(rawResponse);
-
-        return runSimpleQuery(userQuestion);
-        /*
-        if ("분석".equals(ret)) {
-
-            return runRagAnalysis(userQuestion);
         } else {
-            return runSimpleQuery(userQuestion);
-        }
-        */
+            return runSimpleQuery(userQuery);
+        }*/
     }
 
-    public Response runSimpleQuery(String userQuestion) {
+    public Response runRdbAnalysis(String userQuery) {
+        screenRoutes.computeIfAbsent("screenRoutes", k -> screenRoutesMapper.getScreenRoutes());
+        String context = screenRoutes.get("screenRoutes").stream()
+                .map(ScreenRoutesDto::toString)
+                .collect(java.util.stream.Collectors.joining("\n"));
 
-        String prompt = SYS_PROMPT + "\n\n" + userQuestion;
+        String prompt = """
+            아래는 서비스의 전체 메뉴 정보입니다:
+            %s
+            
+            프롬프트 내용을 답변에 그대로 서술하지 마.
+            사용자가 "%s"라고 했을 때, 가장 적합한 screenPath이 있다면 연결 링크 형식으로, 적합한 screenPath만 답변에 포함시켜 줘
+            없으면 포함하지 마.
+            예시: [메뉴 이름](localhost:3000/screenPath)
+            """.formatted(context, userQuery);
+
+        String answer = Claude.invoke(client, SYS_PROMPT + "\n\n" + prompt, 0.7, 4096);
+        return new Response(answer);
+    }
+
+    public Response runSimpleQuery(String userQuery) {
+
+        String prompt = SYS_PROMPT + "\n\n" + userQuery;
 
         return new Response(Claude.invoke(client, prompt, 0.8, 4096));
     }
-
-    public String parseLLMClassification(String responseJson) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(responseJson);
-        String content = root.get("content").asText().trim();
-        return content;
-    }
-
 
 }
