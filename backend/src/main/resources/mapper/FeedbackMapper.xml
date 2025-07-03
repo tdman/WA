@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="aws.community.examples.bedrock.mapper.FeedbackMapper">
+    <select id="getFeedbackProblems" resultType="aws.community.examples.bedrock.dto.FeedbackDto">
+    SELECT R.*, Q.*
+      FROM QUESTION_RESULTS R
+      
+      LEFT JOIN QUESTIONS Q 
+        ON R.QUESTION_ID = Q.QUESTION_ID
+        
+     WHERE 1=1 
+       AND R.STUDENT_ID = #{studentId}
+       AND R.ATTEMPT_ID = #{attemptId}
+  </select>
+</mapper>

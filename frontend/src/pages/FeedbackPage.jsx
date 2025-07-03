@@ -1,157 +1,157 @@
 // src/pages/FeedbackPage.jsx
-import React, { useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getQuestionFeedback } from '../api/axiosInstance';
-import { Container, Box, Typography, List, ListItem, Button } from "@mui/material";
+import {
+  Container, Card, CardContent, Typography, Chip, Grid, Button, Box, Divider
+} from '@mui/material';
+import { CheckCircle, Cancel, ArrowBack } from '@mui/icons-material';
 import LogoutButton from "../components/LogoutButton.jsx";
 import BackButton from "../components/BackButton.jsx";
 import { UserContext } from '../context/UserContext';
+
 function FeedbackPage() {
 
   const { user, login, logout, isLoggedIn, isLoading } = useContext(UserContext);
-  // const location = useLocation();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [data, setData] = useState({});
   //TODO 오희진 임시 데이터 
-
   
     useEffect(() => {
-      console.log('aaasdasdasdasd');
-      console.log('isLoggedIn', isLoggedIn);
-      console.log('isLoading',isLoading);
-
+      // console.log('aaasdasdasdasd');
+      // console.log('isLoggedIn', isLoggedIn);
+      // console.log('isLoading',isLoading);
+      handleFeedback();
     }, [isLoading]);
 
-    
-      const handleFeedback = async () => {
-        console.log('handleFeedback')
-       
-    
-        try {
-          //서버전송
-          const res = await getQuestionFeedback({ studentId });
-          const data = res?.data;
-          
-        
-          
-        } catch (err) {
-          console.error(' 문제풀이 결과 피드백 조 실패:', err);
-          alert(' 문제풀이 결과 피드백 조:');
+     
+    useEffect(() => {
+      console.log('useEffect data', data);
+      // console.log('isLoggedIn', isLoggedIn);
+      // console.log('isLoading',isLoading);
+      // handleFeedback();
+    }, [data]);
+ 
+    const handleFeedback = async () => {
+      console.log('FeedbackPage/handleFeedback');
+  
+   //   console.log('FeedbackPage/handleFeedback/location', location);
+      try {
+        //서버전송
+
+        let req  =  { 
+          "studentId": "STU1", 
+          "attemptId": "20250629-STU1-3" 
         }
-      };
-  const location = {
-    "pathname": "/feedback",
-    "search": "",
-    "hash": "",
-    "state": {
-        "results": [
-            {
-                "problemId": "q1",
-                "question": "5 + 7 = ?",
-                "answer": {
-                    "problemId": "q1",
-                    "userAnswer": "1",
-                    "understood": true,
-                    "elapsedTime": 2.453
-                },
-                "time": 2
-            },
-            {
-                "problemId": "q2",
-                "question": "10 - 3 = ?",
-                "answer": {
-                    "problemId": "q2",
-                    "userAnswer": "1",
-                    "understood": true,
-                    "elapsedTime": 1.09
-                },
-                "time": 1
-            },
-            {
-                "problemId": "q4",
-                "question": "15 ÷ 3 = ?",
-                "answer": {
-                    "problemId": "q4",
-                    "userAnswer": "1",
-                    "understood": true,
-                    "elapsedTime": 2.527
-                },
-                "time": 2
-            },
-            {
-                "problemId": "q8",
-                "question": "8 ÷ 2 = ?",
-                "answer": {
-                    "problemId": "q8",
-                    "userAnswer": "1",
-                    "understood": true,
-                    "elapsedTime": 0.729
-                },
-                "time": 1
-            },
-            {
-                "problemId": "q7",
-                "question": "3 x 5 = ?",
-                "answer": {
-                    "problemId": "q7",
-                    "userAnswer": "1",
-                    "understood": true,
-                    "elapsedTime": 0.952
-                },
-                "time": 1
-            }
-        ]
-    },
-    "key": "2uhjm6ds"
-}
-  console.log('location', location);
-  const navigate = useNavigate();
-  const results = Array.isArray(location.state.results) ? location.state.results : [];
-  console.log('문제푼 결과 state: ', location.state);
-  console.log('문제푼 결과 results: ', location.state.results);
+
+        const res = await getQuestionFeedback(req);
+         let reply = res?.data?.payload?.body?.reply;
+        
+       // console.log('FeedbackPage/handleFeedback/data', reply)
+      //  console.log('FeedbackPage/handleFeedback/data', data)
+      //  data = ;
+        setData(JSON.parse(reply))
+        //console.log('parseFeedback', JSON.stringify(parsed, null, 2));
+
+      } catch (err) {
+        console.error(' 문제풀이 결과 피드백 조회 실패:', err);
+        alert(' 문제풀이 결과 피드백 조회 실패');
+      }
+    };
+    
+ if (!data) return <Typography>피드백을 불러오는 중입니다...</Typography>;
   return (
-    <Container maxWidth="md" sx={{ mt: 5 }}>
+    <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Typography variant="h4" gutterBottom>🧮 문제별 피드백</Typography>
 
-        {/* 애니메이션: 로그아웃 버튼 */}
+      <Grid container spacing={3}>
+        { data?.questions?.map((q) => (
+          <Grid item xs={12} key={q.questionNumber}>
+            <Card variant="outlined"
+                  sx={{
+                    backgroundColor: '#f9f9f9',
+                    width: '150%',        // 전체 그리드 칸을 다 쓰기
+                    maxWidth: '800px',    // 최대 너비 지정 (중요!)
+                    margin: '0 auto',     // 가운데 정렬
+                  }}>
+              <CardContent  sx={{
+                    width: '100%',        // 전체 그리드 칸을 다 쓰기
+                  }}>
+                <Typography variant="h6">문제 {q.questionNumber}: {q.questionContent}</Typography>
 
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2}}>
-            <BackButton />   
-            <LogoutButton />
-        </Box>
-            
-        <Typography variant="h4" gutterBottom>
-            🧠 AI 피드백 결과
-        </Typography>
+                <Box sx={{ mt: 1 }}>
+                  <Chip label={`정답: ${q.answer}`} color="primary" sx={{ mr: 1 }} />
+                  <Chip label={`답안: ${q.studentAnswer || '미입력'}`} color="secondary" sx={{ mr: 1 }} />
+                  <Chip label={`풀이시간: ${q.solveTime}`} variant="outlined" sx={{ mr: 1 }} />
+                  <Chip label={`평균: ${q.averageSolveTime}`} variant="outlined" sx={{ mr: 1 }} />
+                </Box>
 
-      <List>
-        {results.map((item, index) => (
-            <ListItem key={index}>
-                <Typography variant="body1">
-                {index + 1}. 문제 ID: {item.problemId}<br />
-                📝 답변: {item.answer.userAnswer} <br />
-                ✅ 이해도: {item.answer.understood ? "좋음" : "보통"} <br />
-                ⏱️ 시간: {item.answer.elapsedTime}초
+                <Box sx={{ mt: 1 }}>
+                  <Typography variant="body2" color="text.secondary">정답여부: 
+                    {q.isCorrect === "정답" ? (
+                      <Chip label="정답" color="success" icon={<CheckCircle />} sx={{ ml: 1 }} />
+                    ) : (
+                      <Chip label="오답" color="error" icon={<Cancel />} sx={{ ml: 1 }} />
+                    )}
+                  </Typography>
+                </Box>
+
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  이해도 체크: {q.isMarked === "Y" ? "이해 부족" : "이해함"}
                 </Typography>
-            </ListItem>
-            ))}
 
-        {/* {results.map((item, index) => (
-          <ListItem key={index}>
-            <Typography variant="body1">
-              {index + 1}. {item.question} <br />
-              📝 답변: {item.answer} | ⏱️ 시간: {item.time}초
-            </Typography>
-          </ListItem>
-        ))} */}
-      </List>
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  태그: {q.tags?.join(', ')}
+                </Typography>
 
-      <Button
-        variant="contained"
-        sx={{ mt: 3 }}
-        onClick={() => navigate("/main")}
-      >
-        메인으로 돌아가기
-      </Button>
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  해설: {q.explanation}
+                </Typography>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Typography variant="subtitle2" fontWeight="bold">
+                  📢 피드백: 
+                </Typography>
+                <Typography variant="body1">{q.feedback}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      <Box sx={{ mt: 5 }}>
+        <Typography variant="h4" gutterBottom>📌 종합 평가</Typography>
+        <Card variant="outlined">
+          <CardContent>
+            <Typography><strong>💡 강점:</strong> {data?.summary?.strength}</Typography>
+            <Typography><strong>❗ 부족한 점:</strong> {data?.summary?.weakness}</Typography>
+            <Typography><strong>📈 학습 방향:</strong> {data?.summary?.direction}</Typography>
+          </CardContent>
+        </Card>
+      </Box>
+
+      <Box sx={{ mt: 5 }}>
+        <Typography variant="h4" gutterBottom>🎉 칭찬과 응원</Typography>
+        <Card variant="outlined" sx={{ backgroundColor: '#fff9ea' }}>
+          <CardContent>
+            <Typography>{data?.summary?.encouragement}</Typography>
+          </CardContent>
+        </Card>
+      </Box>
+
+      <Box sx={{ mt: 5, textAlign: 'center' }}>
+        <Button
+          variant="contained"
+          startIcon={<ArrowBack />}
+          onClick={() => navigate("/main")}
+        >
+          메인으로 돌아가기
+        </Button>
+      </Box>
     </Container>
   );
-}
+};
 
 export default FeedbackPage;

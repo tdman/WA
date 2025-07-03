@@ -85,7 +85,7 @@ export const generateFeedback = (req) => {
 
 // 5. 문제풀이 결과 피드백 조회 (사용 - 오희진)
 export const getQuestionFeedback = (req) => {
-  return axiosInstance.post('question/feedback', req);
+  return axiosInstance.post('questions/feedback', req);
 };
 
 // 6. 챗봇 질문
