@@ -5,8 +5,10 @@ import aws.community.examples.bedrock.dto.ChatRequest;
 import aws.community.examples.bedrock.dto.ChatResponse;
 import aws.community.examples.bedrock.dto.ScreenRoutesDto;
 import aws.community.examples.bedrock.mapper.ScreenRoutesMapper;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 public class ChatService {
     private final Map<String, List<String>> sessionHistory = new ConcurrentHashMap<>();
@@ -48,11 +51,15 @@ public class ChatService {
         prompt += buildMenuInfo(userInput);
         // [E] 메뉴 정보 포함
 
-        String claudeResponse = Claude.invoke(client, prompt, 0.3, 4096);
+        String claudeResponse = Claude.invoke(client, prompt, 0.5, 4096);
         history.add("[챗봇]: " + claudeResponse);
 
-        ChatResponse dto = objectMapper.readValue(claudeResponse, ChatResponse.class);
-
+        ChatResponse dto = new ChatResponse();
+        try {
+            dto = objectMapper.readValue(claudeResponse, ChatResponse.class);
+        } catch (JsonParseException e) {
+            return buildErrorResponse(studentId, "죄송합니다. 질문을 이해하지 못했습니다. \n 자세한 문의는 02-123-1234로 전화 주세요.");
+        }
         // 필수 정보 설정
         dto.setStudentId(studentId);
 
@@ -130,14 +137,20 @@ public class ChatService {
                 .map(ScreenRoutesDto::toString)
                 .collect(java.util.stream.Collectors.joining("\n"));
 
-        String menuRecommend = """
-            아래는 서비스의 전체 메뉴 정보입니다:
+        return """
+            아래는 참고할 수 있는 전체 메뉴 정보야:
             %s
             
             사용자가 "%s"라고 했을 때, 사용자 질의에 적합한 메뉴가 있다면 "[메뉴 이름](localhost:3000/screenPath)" 이렇게 답변에 포함시켜 줘.
-            관련 있는 메뉴가 없으면, 절대 메뉴 정보를 답변에 포함하지 마.
+            메뉴 정보 제공은 중요하지 않아. 사용자 질의와 관련이 없으면, 메뉴 정보를 답변에 절대 포함하지 마.
             """.formatted(context, userInput);
+    }
 
-        return menuRecommend;
+    public ChatResponse buildErrorResponse(String studentId, String msg) {
+        ChatResponse dto = new ChatResponse();
+        dto.setReply(msg);
+        dto.setStudentId(studentId);
+        dto.setIntent("etc");
+        return dto;
     }
 }

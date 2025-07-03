@@ -1,12 +1,10 @@
 package aws.community.examples.bedrock.controller;
 
 import aws.community.examples.bedrock.aimodels.Claude;
+import aws.community.examples.bedrock.aimodels.Titan;
 import aws.community.examples.bedrock.dto.ScreenRoutesDto;
 import aws.community.examples.bedrock.mapper.ScreenRoutesMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONObject;
+import aws.community.examples.bedrock.service.WeaviateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
 import software.amazon.awssdk.services.bedrockruntime.model.AccessDeniedException;
-import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelRequest;
-import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelResponse;
 
 
 import java.util.List;
@@ -52,11 +47,11 @@ public class ChatPlayground {
     @Autowired
     ScreenRoutesMapper screenRoutesMapper;
 
+    @Autowired
+    WeaviateService weaviateService;
+
     // 예시: 메뉴 정보 캐싱
     private final Map<String, List<ScreenRoutesDto>> screenRoutes = new ConcurrentHashMap<>();
-
-    //@Autowired
-    //public
 
     @PostMapping("/conversation")
     public Response invoke(@RequestBody Request body) {
@@ -67,6 +62,31 @@ public class ChatPlayground {
         } catch (AccessDeniedException e) {
             logger.error("Access Denied: %s".formatted(e.getMessage()));
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        } catch (Exception e) {
+            logger.error("Exception: %s".formatted(e.getMessage()));
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/test2")
+    public Response test(@RequestBody Request body) {
+        try {
+            String userQuery = body.prompt();
+            Titan titan = new Titan(client);
+            Float[] queryEmbedding = titan.embed(userQuery);  // Titan 임베딩
+
+            List<String> similarSentences = weaviateService.searchSimilarTexts(queryEmbedding, 3, "Tutors");
+
+            String context = String.join("\n", similarSentences);
+            String prompt = """
+                사용자 질문: %s
+                질의 관련 정보: %s
+                
+                질의 관련 정보가 있으면, 참고해서 정확하게 답변해줘.
+                """.formatted(context, userQuery);
+
+            return runSimpleQuery(prompt);
+
         } catch (Exception e) {
             logger.error("Exception: %s".formatted(e.getMessage()));
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -90,7 +110,7 @@ public class ChatPlayground {
         대답은 "정보" 또는 "분석" 둘 중 하나만 해주세요.
         """.formatted(userQuery);
 
-        String fstResult =  Claude.invoke(client, prompt, 0.3, 4096);;
+        String fstResult =  Claude.invoke(client, prompt, 0.3, 4096);
 
         logger.info(" @@@@@@@@@@ Claude classification result: {}", fstResult);
        // return runSimpleQuery(userQuestion);

@@ -4,6 +4,7 @@ import aws.community.examples.bedrock.common.CmResponse;
 import aws.community.examples.bedrock.common.CmResponseFactory;
 import aws.community.examples.bedrock.dto.TutorsDto;
 import aws.community.examples.bedrock.mapper.TutorsMapper;
+import aws.community.examples.bedrock.service.WeaviateService;
 import aws.community.examples.bedrock.util.S3Util;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +23,16 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/tutors")
 @Tag(name = "튜터 API", description = "튜터 관련 API입니다.")
-public class TutorControllor {
+public class TutorController {
 
     @Autowired
     TutorsMapper tutorsMapper;
 
     @Autowired
     S3Util s3Util;
+
+    @Autowired
+    WeaviateService weaviateService;
 
     @Description("모든 튜터 조회")
     @GetMapping("/all")
@@ -47,6 +51,10 @@ public class TutorControllor {
                         tutor.setProfileImgBytes(base64);
                     })
                     .collect(Collectors.toList());
+
+            //weaviateService.createSchema("Tutors");
+            //weaviateService.insertDtoListToWeaviate(tutorsListNew, "Tutors", "name");
+
             return CmResponseFactory.success(tutorsListNew);
         } catch (Exception e) {
             log.error("Error fetching tutors list: ", e);
