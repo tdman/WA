@@ -8,6 +8,7 @@ import LogoutButton from "../components/LogoutButton.jsx";
 import BackButton from "../components/BackButton.jsx";
 import { Container, Box } from "@mui/material";
 
+
 function ChatPage() {
   return (
     <Container maxWidth="md" sx={{ mt: 5 }}>
