@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import {
   TextField, Button, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio,
-  Typography, Paper, Stack, Divider, FormHelperText, Avatar, Box
+  Typography, Paper, Stack, Divider, FormHelperText, Avatar, Box, Container
 } from '@mui/material';
 import { Signup } from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import tororoImage from '../assets/ttoro.png'; // 또로 이미지 경로
+import BackButton from '../components/BackButton';
+import LogoutButton from '../components/LogoutButton';
 
 const mbtiQuestions = [
   {
@@ -79,6 +81,10 @@ export default function StudentSignup() {
     Object.values(form.mbtiParts).every(v => v !== '');
 
   return (
+    <Container maxWidth="md" sx={{ mt: 5 }}>
+    <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2 }}>
+        <BackButton />
+    </Box>
     <Box
       sx={{
         minHeight: '100vh',
@@ -87,6 +93,7 @@ export default function StudentSignup() {
         px: 2
       }}
     >
+
       <Paper
         elevation={6}
         sx={{
@@ -201,5 +208,6 @@ export default function StudentSignup() {
         </form>
       </Paper>
     </Box>
+    </Container>
   );
 }

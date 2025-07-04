@@ -19,27 +19,15 @@ function FeedbackPage() {
   //TODO 오희진 임시 데이터 
   
     useEffect(() => {
-      // console.log('aaasdasdasdasd');
-      // console.log('isLoggedIn', isLoggedIn);
-      // console.log('isLoading',isLoading);
       handleFeedback();
     }, [isLoading]);
 
-     
-    useEffect(() => {
-      console.log('useEffect data', data);
-      // console.log('isLoggedIn', isLoggedIn);
-      // console.log('isLoading',isLoading);
-      // handleFeedback();
-    }, [data]);
  
     const handleFeedback = async () => {
       console.log('FeedbackPage/handleFeedback');
   
-   //   console.log('FeedbackPage/handleFeedback/location', location);
       try {
         //서버전송
-
         let req  =  { 
           "studentId": "STU1", 
           "attemptId": "20250629-STU1-3" 
@@ -47,12 +35,8 @@ function FeedbackPage() {
 
         const res = await getQuestionFeedback(req);
          let reply = res?.data?.payload?.body?.reply;
-        
-       // console.log('FeedbackPage/handleFeedback/data', reply)
-      //  console.log('FeedbackPage/handleFeedback/data', data)
-      //  data = ;
+
         setData(JSON.parse(reply))
-        //console.log('parseFeedback', JSON.stringify(parsed, null, 2));
 
       } catch (err) {
         console.error(' 문제풀이 결과 피드백 조회 실패:', err);
