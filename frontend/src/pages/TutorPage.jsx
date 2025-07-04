@@ -7,12 +7,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton";
 import LogoutButton from "../components/LogoutButton";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 function TutorPage() {
     const [tutors, setTutors] = useState([]);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
+
         fetch("http://localhost:55500/tutors/all")
             .then(res => res.json())
             .then(data => {
@@ -22,14 +26,16 @@ function TutorPage() {
             })
             .catch(err => {
                 console.error("튜터 목록 불러오기 실패:", err);
-            });
+            })
+            .finally(() => setLoading(false));
     }, []);
 
     return (
         <Container maxWidth="md" sx={{ mt: 5 }}>
+            <LoadingOverlay open={loading} />
             <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                <BackButton />
-                <LogoutButton />
+                {/*<BackButton />*/}
+                {/*<LogoutButton />*/}
             </Box>
             <Box sx={{ maxWidth: 800, mx: 'auto', mt: 5 }}>
                 <Typography variant="h4" gutterBottom fontWeight={700}>

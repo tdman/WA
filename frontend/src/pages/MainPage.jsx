@@ -1,6 +1,7 @@
 import React from "react";
 import {useNavigate} from "react-router-dom";
 import {Box, Button, Container, Typography} from "@mui/material";
+import RewordShop from "../components/RewordShop.jsx";
 import LogoutButton from "../components/LogoutButton";
 
 function MainPage() {
@@ -123,6 +124,25 @@ function MainPage() {
                             },
                         }}
                         onClick={() => navigate("/progress")}
+                    >
+                        학습 현황 보기
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        color="success"
+                        fullWidth
+                        sx={{
+                            py: 2,
+                            fontSize: "1.2rem",
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                backgroundColor: "#66bb6a",
+                                transform: "scale(1.05)",
+                                boxShadow: "0 6px 12px rgba(102, 187, 106, 0.6)",
+                            },
+                        }}
+                        onClick={() => navigate("/rewordShop")}
                     >
                         학습 현황 보기
                     </Button>
