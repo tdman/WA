@@ -12,11 +12,11 @@ const theme = createTheme({
 });
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <ThemeProvider theme={theme}>
       <UserProvider> {}
         <App />
       </UserProvider>
     </ThemeProvider>
-  </StrictMode>
+  // </StrictMode>
 );

@@ -35,7 +35,7 @@ public class AuthController {
           
         } catch (Exception e) {
             log.error("AuthController signup : ", e);
-            return CmResponseFactory.fail("학생등록 실패");
+            return CmResponseFactory.fail(false, e.getMessage(), request);
         }
 		
 	}
