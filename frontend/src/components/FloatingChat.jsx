@@ -81,15 +81,15 @@ function ChatBotFloating() {
                         bgcolor: 'rgba(0,0,0,0.15)',
                         zIndex: 2100,
                         display: 'flex',
-                        justifyContent: 'center', // 'flex-end',
-                        alignItems: 'center', //'flex-end',
+                        justifyContent: 'flex-end',
+                        alignItems: 'flex-end',
                     }}
                 >
                     <Box
                         sx={{
                             position: 'relative',
-                            //mb: 8,
-                            //mr: 4,
+                            mb: 8,
+                            mr: 4,
                         }}
                     >
                         {/* 닫기 버튼 */}
