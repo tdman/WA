@@ -10,10 +10,10 @@ import {
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { ConfettiContext } from '../context/ConfettiContext';
-import { CanvasConfettiContext } from '../context/CanvasConfettiContext';
 import Tutors from '../pages/TutorPage';
 import ProblemCard from './ProblemCard';
 import Feedback from '../pages/FeedbackPage';
+import RewordShop from '../components/RewordShop.jsx';
 
 function parseMessageWithLink(text, handleLinkClick) {
     const regex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+|localhost:[^\s)]+)\)/g;
@@ -69,10 +69,10 @@ function ChatBot() {
 
     // Confetti 관련 상태
     const { setShowConfetti } = useContext(ConfettiContext);
-    const { fire } = useContext(CanvasConfettiContext);
 
     const [showTutors, setShowTutors] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
+    const [showRewordShop, setShowRewordShop] = useState(false);
 
     const [showProblem, setShowProblem] = useState(false);
     const [currentProblem, setCurrentProblem] = useState({
@@ -290,6 +290,11 @@ function ChatBot() {
                             <Feedback />
                         </Box>
                     )}
+                    {showRewordShop && (
+                        <Box sx={{ mt: 2 }}>
+                            <RewordShop />
+                        </Box>
+                    )}
                 </Box>
                 {/* 입력창 */}
                 <Box
@@ -339,6 +344,7 @@ function ChatBot() {
             <Button onClick={() => setShowProblem((prev) => !prev)} sx={{ mt: 2 }}>문제 풀기</Button>
             <Button onClick={() => setShowTutors((prev) => !prev)} sx={{ mt: 1, ml: 1 }}>튜터 보기</Button>
             <Button onClick={() => setShowFeedback((prev) => !prev)} sx={{ mt: 1, ml: 1 }}>피드백 보기</Button>
+            <Button onClick={() => setShowRewordShop((prev) => !prev)} sx={{ mt: 1, ml: 1 }}>보상 보기</Button>
         </>
     );
 }

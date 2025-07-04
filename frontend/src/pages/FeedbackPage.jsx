@@ -9,7 +9,7 @@ import { CheckCircle, Cancel, ArrowBack } from '@mui/icons-material';
 import LogoutButton from "../components/LogoutButton.jsx";
 import BackButton from "../components/BackButton.jsx";
 import { UserContext } from '../context/UserContext';
-import LoadingOverlay from "../components/LoadingOverlay.jsx";
+import LoadingOverlay from "../components/LoadingOverlay";
 
 function FeedbackPage() {
 
@@ -24,26 +24,33 @@ function FeedbackPage() {
       handleFeedback();
     }, [isLoading]);
 
+
+    useEffect(() => {
+      console.log('useEffect data', data);
+    }, [data]);
  
     const handleFeedback = async () => {
       console.log('FeedbackPage/handleFeedback');
-  
+
       try {
         //서버전송
+        setLoading(true);
+
         let req  =  { 
           "studentId": "STU1", 
           "attemptId": "20250629-STU1-3" 
         }
-        setLoading(true);
+
         const res = await getQuestionFeedback(req);
          let reply = res?.data?.payload?.body?.reply;
 
         setData(JSON.parse(reply))
-
       } catch (err) {
-        setLoading(false);
+
         console.error(' 문제풀이 결과 피드백 조회 실패:', err);
         alert(' 문제풀이 결과 피드백 조회 실패');
+      } finally {
+          setLoading(false);
       }
     };
     
