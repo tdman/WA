@@ -2,7 +2,7 @@ package aws.community.examples.bedrock.service;
 
 import aws.community.examples.bedrock.domain.ProgressStats;
 import aws.community.examples.bedrock.domain.StudyResult;
-import aws.community.examples.bedrock.external.BedrockAiClient;
+import aws.community.examples.bedrock.external.BedrockProgressClient;
 import aws.community.examples.bedrock.mapper.ProgressMapper;
 import aws.community.examples.bedrock.util.ProgressUtils;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProgressServiceImpl implements ProgressService {
     private final ProgressMapper progressMapper;
-    private final BedrockAiClient bedrockClient;
+    private final BedrockProgressClient bedrockClient;
 
         @Override
         public String generateProgress(String studentId) {

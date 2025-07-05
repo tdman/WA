@@ -7,11 +7,11 @@ import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelRequest;
 import software.amazon.awssdk.services.bedrockruntime.model.InvokeModelResponse;
 
 @Component
-public class BedrockAiClient {
+public class BedrockProgressClient {
 
     private final BedrockRuntimeClient bedrockClient;
 
-    public BedrockAiClient(BedrockRuntimeClient bedrockClient) {
+    public BedrockProgressClient(BedrockRuntimeClient bedrockClient) {
         this.bedrockClient = bedrockClient;
     }
 

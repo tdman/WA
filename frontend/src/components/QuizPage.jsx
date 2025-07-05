@@ -14,20 +14,16 @@ const QuizPage = () => {
         setFeedback("");
         setAnswer("");
         try {
-            const res = await axios.post("http://localhost:55500/questions/search", {
-                mode: "standard",
-                subject: "",
-                types: [],
-                count: 1,
-                since: "",
-                difficulty: ""
+            const res = await axios.post("http://localhost:55500/quiz", {
+                difficulty: "하" // 필요한 요청 파라미터를 명시적으로 추가
             });
-            if (res.data.length === 0) {
+            if (!res.data || !res.data.questionId) {
                 setDone(true);
             } else {
-                setQuestion(res.data[0]);
+                setQuestion(res.data);  // ✅ 단일 객체로 받음
             }
         } catch (e) {
+            console.error("문제 불러오기 실패", e);
             setError("문제 불러오기 실패");
         } finally {
             setLoading(false);
@@ -42,13 +38,14 @@ const QuizPage = () => {
         if (!question) return;
         try {
             const res = await axios.post("http://localhost:55500/questions/feedback", {
-                question: question.question_content,
+                question: question.originalQuestion,  // ✅ 필드명 수정
                 studentAnswer: answer,
                 answer: question.answer,
-                explanation: question.explanation
+                explanation: question.explanation || ""
             });
             setFeedback(res.data?.result?.data?.feedback || "피드백 없음");
         } catch (e) {
+            console.error("AI 피드백 실패", e);
             setFeedback("AI 피드백 실패");
         }
     };
@@ -61,14 +58,7 @@ const QuizPage = () => {
 
     return (
         <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-            {/*<h2>문제</h2>*/}
-            <p><strong>문제:</strong> {question.questionContent}</p>
-            {/*<p><strong>과목:</strong> {question.subject_type}</p>*/}
-            {/*<p><strong>난이도:</strong> {question.difficulty}</p>*/}
-            {/*<p><strong>유형:</strong> {question.question_type}</p>*/}
-            {/*{question.tags && (*/}
-            {/*    <p><strong>태그:</strong> {Array.isArray(question.tags) ? question.tags.join(", ") : String(question.tags)}</p>*/}
-            {/*)}*/}
+            <p><strong>문제:</strong> {question.rewriteQuestion || question.originalQuestion}</p>
 
             <div style={{ marginTop: "10px" }}>
                 <label>정답입력: </label>
@@ -89,13 +79,11 @@ const QuizPage = () => {
 
             {feedback && (
                 <div style={{ marginTop: "20px" }}>
-                    {/*<h3>AI 피드백</h3>*/}
                     <p>{feedback}</p>
                     <button onClick={quit}>그만풀래</button>
                     <button onClick={loadNextQuestion} style={{ marginLeft: "10px" }}>다음 문제</button>
                 </div>
             )}
-
         </div>
     );
 };
