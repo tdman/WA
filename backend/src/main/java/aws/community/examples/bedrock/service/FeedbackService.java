@@ -41,6 +41,8 @@ public class FeedbackService {
         prompt.append("[로그인] 데이터를 사용해서 사전에 양식으로 지정한 JSON 형식에 맞춰 출력 해줘.");
         prompt.append("[문제 풀이 결과 (피드백)] 데이터를 사용해서 사전에 양식으로 지정한 JSON 형식에 맞춰 출력 해줘.");
         prompt.append("[문제 풀이 결과 (단건)]은 필요없어.");
+        prompt.append("로그인 JSON 과, 문제풀이 결과 JSON 을 하나의 JSON 으로 만들어줘");
+        prompt.append("반드시 파싱이 가능한 JSON 형태로 만들어 줘야해");
         prompt.append("끝!");
 
         String claudeResponse = Claude.invoke(bedrockClient, prompt.toString(), 0.3, 1500, systemPrompt);
@@ -59,7 +61,8 @@ public class FeedbackService {
         prompt.append("[로그인]데이터를 사용해서 사전에 양식으로 지정한 JSON 형식에 맞춰 출력 해줘.");
         prompt.append("[문제 풀이 결과 (단건)] 데이터를 사용해서 사전에 양식으로 지정한 JSON 형식에 맞춰 출력 해줘.");
         prompt.append("[문제 풀이 결과 (피드백)]은 필요없어.");
-        
+        prompt.append("로그인 JSON 과, 문제풀이 결과 JSON 을 하나의 JSON 으로 만들어줘");
+        prompt.append("반드시 파싱이 가능한 JSON 형태로 만들어 줘야해");
         String claudeResponse = Claude.invoke(bedrockClient, prompt.toString(), 0.3, 500, systemPrompt);
      
 		log.info("claudeResponse" + claudeResponse.toString());
@@ -128,28 +131,32 @@ public class FeedbackService {
                 """);
         
         
+        
         sb.append("""
               	[ 3. 문제풀이결과 (단건) 양식 ]
 	              	말투는 또로의 말투를 반드시 사용해야 합니다.
+	              	
 	        		[문제풀이 결과 데이터]를 분석하여 JSON 형식으로 피드백을 작성해주세요.
-		            반드시 다음 JSON 형식에 맞춰 출력해 주세요.
-	    			
+        		      반드시 다음 JSON 형식에 맞춰 출력해 주세요.
+		            
+	    			[explanation 프롬프팅] 
+		    			문제에 대한 또로의 격려와 응원을 작성해주세요.
+		    			또로의 말투로 짧은 1문장으로 작성해주세요.
+		    			questions 의 [answer] 와 [studentAnswer] 가 서로 다르면 풀이와 격려를 해주고, 같으면 응원만 해주세요. 가끔 [로그인한 학생의 이름]도 불러주세요.
+		    			절대로  [answer] 와 [studentAnswer]가 다른데 정답이라고 하면 안돼 . 땡 또는 틀렸어, 다시맞혀봐, 등의 확실하고 귀여운 표현으로 해줘.
+		    			첫 시작 마디는 정답 여부로 재치있게 알려주세요. 
+		    			입력한 정답이 모호한 경우에는 [로그인한 학생의 이름] 이야, 말을 이해하기가 너무 어려워~~ 라고 표시해주세요. 
+		    			프롬프팅에 사용된 '여기는 해설로 문제 대한 풀이를 또로....'는 말하지마.
+
 		            {
 		              "questions": {
 		                  "questionId": 1,
 		                  "subjectType": "수학",
-		                  "difficulty": "사고력",
 		                  "questionContent": "45 * 66",
 		                  "answer": "2970",
 		                  "studentAnswer": "2970",
-		                  "explanation": "여기는 또로의 말투로 짧은 1문장으로 말하는거야. answer 와 studentAnswer 가 서로 다르면 풀이와 격려를 해주고, 같으면 응원만 해줘. 가끔 로그인한 학생의 이름도 불러줘.",
-		                  "questionType": "13초",
+		                  "explanation": "[explanation 프롬프팅] 적용해서 작성해주세요.",
 		                  "avgSolveTimeSec": "13초",
-		                  "averageSolveTime": "16초",
-		                  "tags": ["연산", "고등", "초등", "중등"],
-		                  "isCorrect": "Y/N",
-		                  "isMarked": "Y/N",
-		                  "feedback": "여기는 피드백으로 또로의 말투로  짧은 한문장으로 averageSolveTime 시간대비 solveTime 에 대한 피드백을 해주고, 1초는 암산이 너무 빠르다고 피드백하기",
 		                }
 		             
 		            }
@@ -158,19 +165,90 @@ public class FeedbackService {
 
                 """);
         
+//        
+//        
+//        sb.append("""
+//              	[ 3. 문제풀이결과 (단건) 양식 ]
+//	              	말투는 또로의 말투를 반드시 사용해야 합니다.
+//	              	
+//	        		[문제풀이 결과 데이터]를 분석하여 JSON 형식으로 피드백을 작성해주세요.
+//        		      반드시 다음 JSON 형식에 맞춰 출력해 주세요.
+//		            
+//	    			[explanation 프롬프팅] 
+//		    			문제에 대한 또로의 격려와 응원을 작성해주세요.
+//		    			또로의 말투로 짧은 1문장으로 작성해주세요.
+//		    			answer 와 studentAnswer 가 서로 다르면 풀이와 격려를 해주고, 같으면 응원만 해주세요. 가끔 [로그인한 학생의 이름]도 불러주세요.
+//		    			입력한 정답이 모호한 경우에는 [로그인한 학생의 이름] 이야, 말을 이해하기가 너무 어려워~~ 라고 표시해줘
+//	    			
+//	    			
+//	    			
+//	    			
+//		            {
+//		              "questions": {
+//		                  "questionId": 1,
+//		                  "subjectType": "수학",
+//		                  "difficulty": "사고력",
+//		                  "questionContent": "45 * 66",
+//		                  "answer": "2970",
+//		                  "studentAnswer": "2970",
+//		                  "explanation": "[explanation 프롬프팅] 적용해서 작성해주세요.",
+//		                  "questionType": "13초",
+//		                  "avgSolveTimeSec": "13초",
+//		                  "averageSolveTime": "16초",
+//		                  "tags": ["연산", "고등", "초등", "중등"],
+//		                  "isCorrect": "Y/N",
+//		                  "isMarked": "Y/N",
+//		                  "feedback": "여기는 피드백으로 또로의 말투로  짧은 한문장으로 averageSolveTime 시간대비 solveTime 에 대한 피드백을 해주고, 1초는 암산이 너무 빠르다고 피드백하기",
+//		                }
+//		             
+//		            }
+//		
+//		            출력은 반드시 위 JSON 구조에 맞춰 주세요. 
+//
+//                """);
+//        
+//        sb.append("""
+//              	[ 4. 로그인 양식 ]
+//	              	말투는 또로의 말투를 반드시 사용해야 합니다.
+//	              	
+//	        		[로그인 데이터]를 분석하여 JSON 형식으로 피드백을 작성해주세요.
+//		            반드시 다음 JSON 형식에 맞춰 출력해 주세요.
+//        		  		
+//        		  	[로그인한 학생의 이름 프롬프팅]
+//        		  	 학생의 이름은 "userData" 의 name 입니다.
+//        		  	 또로는 AI 학습 친구 입니다. 
+//        		
+//		            {
+//		              "userData": {
+//						    "studentId": "hjoh",
+//						    "name": "오히디니",
+//						    "mbti": "ENFP",
+//						    "email": "hjoh@woongjin.co.kr",
+//						    "tutorId": "TUTOR1",
+//						}
+//		            }
+//		
+//		            출력은 반드시 위 JSON 구조에 맞춰 주세요. 
+//
+//                """);
+//        
+        
         sb.append("""
               	[ 4. 로그인 양식 ]
 	              	말투는 또로의 말투를 반드시 사용해야 합니다.
+	              	
 	        		[로그인 데이터]를 분석하여 JSON 형식으로 피드백을 작성해주세요.
 		            반드시 다음 JSON 형식에 맞춰 출력해 주세요.
-	    	
+        		  		
+        		  	[로그인한 학생의 이름 프롬프팅]
+        		  	 학생의 이름은 "userData" 의 name 입니다.
+        		  	 또로는 AI 학습 친구 입니다. 
+        		
 		            {
 		              "userData": {
 						    "studentId": "hjoh",
 						    "name": "오히디니",
 						    "mbti": "ENFP",
-						    "email": "hjoh@woongjin.co.kr",
-						    "tutorId": "TUTOR1",
 						}
 		            }
 		
