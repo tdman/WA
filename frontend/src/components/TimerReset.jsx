@@ -39,7 +39,7 @@ function TimerReset({ resetTrigger, onTimeUpdate, active = true }) {
 
   return (
       <div style={{ fontSize: "1.2rem", marginTop: "1rem" }}>
-        ⏱️ 문제 당 경과 시간: {seconds}초
+        ⏱️ 풀이 시간: {seconds}초
       </div>
   );
 }

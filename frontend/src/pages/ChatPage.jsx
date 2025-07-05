@@ -1,12 +1,10 @@
 /**
- * 
+ *
  */
 // pages/ChatPage.js
 import React from 'react';
 import ChatBot from '../components/ChatBot.jsx';
-import LogoutButton from "../components/LogoutButton.jsx";
-import BackButton from "../components/BackButton.jsx";
-import { Container, Box } from "@mui/material";
+import { Container } from "@mui/material";
 
 
 function ChatPage() {

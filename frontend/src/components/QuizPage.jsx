@@ -95,11 +95,11 @@ const QuizPage = () => {
     const quit = () => setDone(true);
 
     if (error) return <div>{error}</div>;
-    if (done) return <div>문제 풀이를 종료했습니다.</div>;
+    if (done) return <div>문제 풀이를 종료했또로~</div>;
     if (loading || !question) return <div>문제 불러오는 중...</div>;
 
     return (
-        <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
+        <div style={{ padding: "1px", maxWidth: "600px", margin: "0 auto" }}>
             <TimerReset
                 resetTrigger={resetKey}
                 onTimeUpdate={setTimeTaken}

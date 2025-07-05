@@ -60,11 +60,11 @@ function Progress() {
     }
 
     return (
-        <Container maxWidth="md" sx={{ mt: 5 }}>
-            <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-                <BackButton />
-                <LogoutButton />
-            </Box>
+        <Container maxWidth="md" sx={{ mt: 1 }}>
+            {/*<Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2 }}>*/}
+            {/*    <BackButton />*/}
+            {/*    <LogoutButton />*/}
+            {/*</Box>*/}
             <Box sx={{ maxWidth: 1000, mx: "auto", mt: 5, px: 2 }}>
                 <Typography variant="h5" gutterBottom>
                     📊 최근 1주일 AI 학습 분석 리포트

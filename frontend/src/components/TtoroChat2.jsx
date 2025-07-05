@@ -1,20 +1,9 @@
-import React, {useEffect, useState, useRef, useContext} from 'react';
-import {
-    Box,
-    Paper,
-    Typography,
-    TextField,
-    IconButton,
-    List,
-    ListItem,
-    ListItemText,
-    Button
-} from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Box, Button, Paper, Typography } from '@mui/material';
 import '../css/TtoroChat2.css';
 import LogoutButton from "./LogoutButton.jsx";
 import walkTtoro from '../assets/ttoro_walk_pause_slower.gif';
-import {ConfettiContext} from '../context/ConfettiContext';
+import { ConfettiContext } from '../context/ConfettiContext';
 import Tutors from '../pages/TutorPage'; // 상단에 추가
 import Quiz from './QuizPage'; // 상단에 추가
 import Progress from '../pages/ProgressPage';
@@ -194,7 +183,7 @@ function TtoroChat2() {
 
     return (
         <div className="chatbot-background">
-            <Box sx={{mt: 5, display: "flex", justifyContent: "flex-end"}}>
+            <Box sx={{mt: 5, mx: 5 , display: "flex", justifyContent: "flex-end"}}>
                 <LogoutButton/>
             </Box>
             <div className="chatbot-inside">

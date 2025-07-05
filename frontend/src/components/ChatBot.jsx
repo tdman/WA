@@ -15,6 +15,7 @@ import ProblemCard from './ProblemCard';
 import Feedback from '../pages/FeedbackPage';
 import RewordShop from '../components/RewordShop.jsx';
 import QuizPage from "../components/QuizPage.jsx";
+import Progress from "../pages/ProgressPage.jsx";
 
 const DOG_EMOJI = "🐶";
 
@@ -74,6 +75,7 @@ function ChatBot() {
     const { setShowConfetti } = useContext(ConfettiContext);
 
     const [showQuiz, setShowQuiz] = useState(false);
+    const [showProgress, setShowProgress] = useState(false);
     const [showTutors, setShowTutors] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
     const [showRewordShop, setShowRewordShop] = useState(false);
@@ -163,7 +165,7 @@ function ChatBot() {
     };
 
     return (
-        <Box sx={{ position: 'relative', mx: 'auto' , mt: 2 }}>
+        <Box sx={{ position: 'relative', mx: 'auto' , mt: 1 }}>
         {/*<Box sx={{ position: 'relative', width: '100%', mx: 'auto', mt: 4 }}>*/}
             {/* 강아지 귀 */}
             {/*<Box*/}
@@ -316,6 +318,11 @@ function ChatBot() {
                             <QuizPage />
                         </Box>
                     )}
+                    {showProgress && (
+                        <Box sx={{ mt: 1 }}>
+                            <Progress />
+                        </Box>
+                    )}
                     {showProblem && (
                         <Box sx={{ mt: 1 }}>
                             <ProblemCard
@@ -394,6 +401,11 @@ function ChatBot() {
                     setShowQuiz((prev) => !prev)}
                         sx={{ bgcolor: '#e3f2fd', color: '#1976d2', fontWeight: 700 }}>
                     문제 풀기
+                </Button>
+                <Button onClick={() =>
+                    setShowProgress((prev) => !prev)}
+                        sx={{ bgcolor: '#c8e6c9', color: '#388e3c', fontWeight: 700 }}>
+                    학습 현황
                 </Button>
                 <Button onClick={() =>
                     setShowTutors((prev) => !prev)}
