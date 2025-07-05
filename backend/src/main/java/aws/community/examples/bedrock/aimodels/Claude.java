@@ -38,4 +38,38 @@ public class Claude {
 
         return contentArray.getJSONObject(0).getString("text");
     }
+    
+    
+
+    public static String invoke(BedrockRuntimeClient client, String prompt, double temperature, int maxTokens, String systemPrompt) {
+
+        JSONObject jsonBody = new JSONObject()
+                .put("anthropic_version", "bedrock-2023-05-31")
+                .put("messages", new JSONArray()
+                        .put(new JSONObject()  // 시스템 프롬프트
+                                .put("role", "system")
+                                .put("content", systemPrompt))
+                        .put(new JSONObject()
+                                .put("role", "user")
+                                .put("content", prompt)))
+                .put("temperature", temperature)
+                .put("max_tokens", maxTokens);
+
+        InvokeModelRequest request = InvokeModelRequest.builder()
+                .modelId(MODEL_ID)
+                .contentType("application/json")
+                .body(SdkBytes.fromUtf8String(jsonBody.toString()))
+                .build();
+
+        InvokeModelResponse response = client.invokeModel(request);
+
+        String responseString = response.body().asUtf8String();
+        JSONObject json = new JSONObject(responseString);
+
+
+        // 응답 텍스트 추출
+        JSONArray contentArray = json.getJSONArray("content");
+
+        return contentArray.getJSONObject(0).getString("text");
+    }
 }

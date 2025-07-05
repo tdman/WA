@@ -9,6 +9,8 @@ import aws.community.examples.bedrock.dto.QuestionSearchRequest;
 import aws.community.examples.bedrock.dto.QuestionSearchResponse;
 import aws.community.examples.bedrock.dto.SaveQuestionResultRequest;
 import aws.community.examples.bedrock.dto.StudentDto;
+
+
 import aws.community.examples.bedrock.service.FeedbackService;
 import aws.community.examples.bedrock.service.QuestionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,14 @@ public class QuestionController {
         );
     }
 
+
+    @PostMapping("/result")
+    public List<QuestionSearchResponse> resultQuestions(@RequestBody QuestionSearchRequest request) {
+        return questionService.searchQuestions(request);
+    }
+
+
+    
     @PostMapping("/feedback")
     public CmResponse<ResponseEntity<ChatResponse>> feedback(@RequestBody FeedbackDto request) {
 	    try {
