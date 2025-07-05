@@ -14,14 +14,60 @@ import SendIcon from '@mui/icons-material/Send';
 import '../css/TtoroChat2.css';
 import LogoutButton from "./LogoutButton.jsx";
 import walkTtoro from '../assets/ttoro_walk_pause_slower.gif';
+import {ConfettiContext} from '../context/ConfettiContext';
+import Tutors from '../pages/TutorPage'; // 상단에 추가
+import Quiz from './QuizPage'; // 상단에 추가
+import Progress from '../pages/ProgressPage'; // 상단에 추가
 
-import RewordShop from './RewordShop.jsx';
-import { ConfettiContext } from '../context/ConfettiContext';
+// 임시 컴포넌트
+function ProgressPage({onClose}) {
+    return (
+        <Paper sx={{p: 2, mb: 2, bgcolor: '#e3f2fd'}}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography variant="subtitle1">진도 현황</Typography>
+                <Button size="small" onClick={onClose}>닫기</Button>
+            </Box>
+            <Progress/> {/* 실제 ProgressPage 컴포넌트 삽입 */}
+        </Paper>
+    );
+}
+
+function QuizPage({onClose}) {
+    return (
+        <Paper sx={{p: 2, mb: 2, bgcolor: '#fff9c4'}}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Button size="small" onClick={onClose}>닫기</Button>
+            </Box>
+            <Quiz/> {/* 실제 QuizPage 컴포넌트 삽입 */}
+        </Paper>
+    );
+}
+
+function TutorPage({onClose}) {
+    return (
+        <Paper sx={{p: 2, mb: 2, bgcolor: '#ffe0b2'}}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+            </Box>
+            <Tutors/> {/* 실제 Tutors 컴포넌트 삽입 */}
+        </Paper>
+    );
+}
+
+function RewordShop({onClose}) {
+    return (
+        <Paper sx={{p: 2, mb: 2, bgcolor: '#c8e6c9'}}>
+            <sBox display="flex" justifyContent="space-between" alignItems="center">
+                <Typography variant="subtitle1">보상 상점</Typography>
+                <Button size="small" onClick={onClose}>닫기</Button>
+            </sBox>
+            <Typography>여기에 보상 상점 내용</Typography>
+        </Paper>
+    );
+}
 
 const TTORO_EMOJI = "🧸";
 const USER_EMOJI = "🌟";
 const TTORO_IMG = "/ttoro_emoji.png";
-
 
 function parseMessageWithLink(text, handleLinkClick) {
     const regex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+|localhost:[^\s)]+)\)/g;
@@ -73,13 +119,13 @@ function TtoroChat2() {
     const [messages, setMessages] = useState([]);
     const [userName, setUserName] = useState('사용자');
     const [userInfo, setUserInfo] = useState({});
-
-    // 챗봇 메시지 리스트 스크롤을 위한 ref
-    const listRef = useRef(null);
-    // 폭죽 효과를 위한 컨텍스트
-    const { setShowConfetti } = useContext(ConfettiContext);
-
+    const [showProgress, setShowProgress] = useState(false);
+    const [showQuiz, setShowQuiz] = useState(false);
+    const [showTutor, setShowTutor] = useState(false);
     const [showRewordShop, setShowRewordShop] = useState(false);
+
+    const listRef = useRef(null);
+    const {setShowConfetti} = useContext(ConfettiContext);
 
     useEffect(() => {
         let sessionId = localStorage.getItem('chatbot-session');
@@ -91,7 +137,6 @@ function TtoroChat2() {
             setUserInfo(JSON.parse(localStorage.user));
             setUserName(JSON.parse(localStorage.user).name);
         } catch (e) {
-            console.error('사용자 정보 로드 실패:', e);
             setUserName('사용자');
         }
     }, []);
@@ -100,62 +145,44 @@ function TtoroChat2() {
         if (listRef.current) {
             listRef.current.scrollTop = listRef.current.scrollHeight;
         }
-    }, [messages]);
+    }, [messages, showProgress, showQuiz, showTutor, showRewordShop]);
 
-    // 대화 폭죽 효과
     const triggerConfettiIfNeeded = (text) => {
-
-        //if (text.includes('축하') || text.includes('성공') || text.includes('완료')) {
-            setShowConfetti(true);
-            setTimeout(() => setShowConfetti(false), 5000);
-        //}
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 5000);
     };
-
-
-    useEffect(() => {
-        if (showRewordShop) {
-            if (listRef.current) {
-                listRef.current.scrollTop = listRef.current.scrollHeight;
-            }
-        }
-    }, [ showRewordShop]);
 
     const handleSend = async () => {
         if (!input.trim()) return;
         const sessionId = localStorage.getItem('chatbot-session');
-        setMessages((prev) => [...prev, { sender: 'user', text: input }]);
+        setMessages((prev) => [...prev, {sender: 'user', text: input}]);
         const userMessage = input;
         setInput('');
         try {
             const response = await fetch('http://localhost:55500/chat/support/bot', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sessionId: sessionId, message: userMessage, studentId: userInfo.studentId }),
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({sessionId: sessionId, message: userMessage, studentId: userInfo.studentId}),
             });
             if (response.ok) {
                 const data = await response.json();
-
                 data.reply = data.reply.replace(/\\n/g, ' ');
-
                 setMessages((prev) => [
                     ...prev,
-                    { sender: '또로', text: data.reply }
+                    {sender: '또로', text: data.reply}
                 ]);
-
-                // 폭죽 효과
                 triggerConfettiIfNeeded(data.reply);
-
             } else {
                 setMessages((prev) => [
                     ...prev,
-                    { sender: '또로', text: '서버에서 오류가 발생했습니다.' }
+                    {sender: '또로', text: '서버에서 오류가 발생했습니다.'}
                 ]);
             }
         } catch (e) {
-            console.error('네트워크 오류:', e);
+            console.error('handleSend 네트워크 오류:', e);
             setMessages((prev) => [
                 ...prev,
-                { sender: '또로', text: '네트워크 오류가 발생했습니다.' }
+                {sender: '또로', text: '네트워크 오류가 발생했습니다.'}
             ]);
         }
     };
@@ -185,19 +212,17 @@ function TtoroChat2() {
                             display: 'flex',
                             alignItems: 'center',
                             mb: 2,
-                            //position: 'sticky',
-                            top: 0,
-                            zIndex: 2,
-                            //backgroundColor: 'rgba(255,255,255,0.85)',
-                            //px: 2,
-                            //pt: 2,
-                            //pb: 1,
                             borderTopLeftRadius: 8,
                             borderTopRightRadius: 8,
                         }}>
                             <span style={{fontSize: 38, marginRight: 8}}>{TTORO_EMOJI}</span>
                             <Typography variant="h6" gutterBottom>또로</Typography>
                         </Box>
+                        {/* 하단 버튼으로 토글되는 컴포넌트들 */}
+                        {showProgress && <Progress onClose={() => setShowProgress(false)}/>}
+                        {showQuiz && <Quiz onClose={() => setShowQuiz(false)}/>}
+                        {showTutor && <Tutors onClose={() => setShowTutor(false)}/>}
+                        {showRewordShop && <RewordShop onClose={() => setShowRewordShop(false)}/>}
                         <List>
                             {messages.length === 0 && (
                                 <ListItem>
@@ -220,7 +245,6 @@ function TtoroChat2() {
                                     }}
                                 >
                                     <Box className={`chatbot-msg-box ${msg.sender === 'user' ? 'user' : 'ttoro'}`}>
-
                                         {msg.sender === '또로'
                                             ? parseMessageWithLink(msg.text, handleLinkClick)
                                             : msg.text}
@@ -280,6 +304,7 @@ function TtoroChat2() {
             <div className="ttoro-walk-img-wrapper">
                 <img src={walkTtoro} alt="걷는 또로"/>
             </div>
+            {/* 하단 버튼 4개 */}
             <Box
                 sx={{
                     position: 'fixed',
@@ -293,16 +318,30 @@ function TtoroChat2() {
                 }}
             >
                 <Button
+                    onClick={() => setShowProgress((prev) => !prev)}
+                    sx={{bgcolor: '#e3f2fd', color: '#1976d2', fontWeight: 700}}
+                >
+                    진도 보기
+                </Button>
+                <Button
+                    onClick={() => setShowQuiz((prev) => !prev)}
+                    sx={{bgcolor: '#fff9c4', color: '#bfa000', fontWeight: 700}}
+                >
+                    퀴즈 보기
+                </Button>
+                <Button
+                    onClick={() => setShowTutor((prev) => !prev)}
+                    sx={{bgcolor: '#ffe0b2', color: '#e65100', fontWeight: 700}}
+                >
+                    튜터 보기
+                </Button>
+                <Button
                     onClick={() => setShowRewordShop((prev) => !prev)}
-                    sx={{bgcolor: '#ffd699', color: '#7c4a03', fontWeight: 700}}
+                    sx={{bgcolor: '#c8e6c9', color: '#388e3c', fontWeight: 700}}
                 >
                     보상 보기
                 </Button>
             </Box>
-
-            {showRewordShop && (
-                <RewordShop onClose={() => setShowRewordShop(false)} />
-            )}
         </div>
     );
 }
