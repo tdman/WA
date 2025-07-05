@@ -20,7 +20,7 @@ const QuizPage = () => {
             if (!res.data || !res.data.questionId) {
                 setDone(true);
             } else {
-                setQuestion(res.data);  // ✅ 단일 객체로 받음
+                setQuestion(res.data);  // 단일 객체로 받음
             }
         } catch (e) {
             console.error("문제 불러오기 실패", e);
@@ -38,11 +38,12 @@ const QuizPage = () => {
         if (!question) return;
         try {
             const res = await axios.post("http://localhost:55500/questions/feedback", {
-                question: question.originalQuestion,  // ✅ 필드명 수정
-                studentAnswer: answer,
-                answer: question.answer,
-                explanation: question.explanation || ""
+                questionId: question.questionId,    // 원본 문제 ID
+                studentAnswer: answer               // 사용자 입력값
             });
+
+            console.log('res >>>>>>> ',res);
+
             setFeedback(res.data?.result?.data?.feedback || "피드백 없음");
         } catch (e) {
             console.error("AI 피드백 실패", e);

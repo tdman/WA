@@ -3,6 +3,7 @@ package aws.community.examples.bedrock.service;
 import aws.community.examples.bedrock.domain.Question;
 import aws.community.examples.bedrock.dto.QuizRequest;
 import aws.community.examples.bedrock.dto.QuizResponse;
+import aws.community.examples.bedrock.dto.TtoroResult;
 import aws.community.examples.bedrock.external.BedrockQuizClient;
 import aws.community.examples.bedrock.mapper.QuestionMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,38 +19,24 @@ public class QuizServiceImpl implements QuizService {
     private final BedrockQuizClient bedrockQuizClient;
 
     @Override
-//    public List<QuizResponse> getCuteQuizList(QuizRequest request) {
     public QuizResponse getCuteQuizList(QuizRequest request) {
-        System.out.println("✅ /quiz API 호출됨 - subject: " + request);
+        System.out.println("✅ /quiz API 호출됨 - request: " + request);
 
-//        List<Question> questions = questionMapper.selectRandomQuestions(request.getSubjectType(), request.getDifficulty(), request.getCount());
         Question question = questionMapper.selectRandomQuestions(request.getDifficulty());
-
         System.out.println("🧾 불러온 문제: " + question.getQuestionContent());
 
-        String cute = convertToHachupingStyle(question.getQuestionContent());
-        System.out.println("🟡 Claude 변환 결과: " + cute);
+        TtoroResult result = convertTtoroStyle(question);
+        System.out.println("🟡 Claude 변환 결과: " + result.getTtoroText());
 
         return QuizResponse.builder()
-                .questionId(question.getQuestionId())
+                .questionId(result.getQuestionId())
                 .originalQuestion(question.getQuestionContent())
-                .rewriteQuestion(cute)  // 또는 cuteQuestion
+                .rewriteQuestion(result.getTtoroText())
                 .answer(question.getAnswer())
                 .build();
-
-//        return questions.stream()
-//                .map(q -> {
-//                    String cute = convertToHachupingStyle(q.getQuestionContent());
-//                    return QuizResponse.builder()
-//                            .questionId(q.getQuestionId())
-//                            .originalQuestion(q.getQuestionContent())
-//                            .rewriteQuestion(cute)
-//                            .answer(q.getAnswer())
-//                            .build();
-//                }).toList();
     }
 
-    private String convertToHachupingStyle(String content) {
+    private TtoroResult convertTtoroStyle(Question question) {
         String prompt = String.format("""
             당신은 귀엽고 똑똑한 친구 캐릭터 '또로'입니다.
             친구에게 문제를 내는 상황입니다.
@@ -102,7 +89,7 @@ public class QuizServiceImpl implements QuizService {
             %s
 
             위 문제를 한 문장으로 귀엽고 다정한 또로 말투로 자연스럽게 바꿔주세요. 어린이에게 꼭 맞는 표현이면 더 좋아요.
-        """, content);
+        """, question.getQuestionContent());
 
         System.out.println("🟡 Claude에게 보낼 프롬프트:\n" + prompt);  // [1] 프롬프트 확인
 
@@ -110,7 +97,7 @@ public class QuizServiceImpl implements QuizService {
 
         System.out.println("🟢 Claude 응답 결과:\n" + response);       // [3] 응답 확인
 
-        return response;
+        return new TtoroResult(question.getQuestionId(), response);
     }
 }
 
