@@ -27,4 +27,8 @@ public class StudentService {
         return true;
     }
 
+    public StudentDto getStudentInfo(String studentId) {
+        return studentMapper.getStudentInfo(studentId);
+    }
+
 }

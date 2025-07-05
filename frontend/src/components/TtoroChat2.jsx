@@ -134,6 +134,9 @@ function TtoroChat2() {
             });
             if (response.ok) {
                 const data = await response.json();
+
+                data.reply = data.reply.replace(/\\n/g, ' ');
+
                 setMessages((prev) => [
                     ...prev,
                     { sender: '또로', text: data.reply }
