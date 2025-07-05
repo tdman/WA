@@ -9,8 +9,6 @@ import aws.community.examples.bedrock.mapper.QuestionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService {
@@ -20,13 +18,13 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public QuizResponse getCuteQuizList(QuizRequest request) {
-        System.out.println("✅ /quiz API 호출됨 - request: " + request);
+        System.out.println("/quiz API 호출됨 - request: " + request);
 
         Question question = questionMapper.selectRandomQuestions(request.getDifficulty());
-        System.out.println("🧾 불러온 문제: " + question.getQuestionContent());
+        System.out.println("불러온 문제: " + question.getQuestionContent());
 
         TtoroResult result = convertTtoroStyle(question);
-        System.out.println("🟡 Claude 변환 결과: " + result.getTtoroText());
+        System.out.println("Claude 변환 결과: " + result.getTtoroText());
 
         return QuizResponse.builder()
                 .questionId(result.getQuestionId())
@@ -49,7 +47,7 @@ public class QuizServiceImpl implements QuizService {
             - '~또로'는 너무 억지스럽지 않게, 감탄할 때나 강조할 때 자연스럽게 섞어주세요.
             - 모든 문장을 ~또로로 끝낼 필요는 없으며, 상황에 맞게 '~해보자', '~할까?', '~했지?' 같은 표현도 적극 활용해주세요.
             - 말투는 히히, 우와, 앗! 같은 의성어/감탄어를 사용하여 리듬감 있게 만들어주세요.
-            
+        
             [절대 사용하지 말아야 할 표현 목록]
             - 문제풀이에 도움주지 마세요.
             - 격려 하지 마세요.
@@ -76,14 +74,14 @@ public class QuizServiceImpl implements QuizService {
             - "지구는 어떤 모양인가요?" → "지구는 어떤 모양일까~?"
             - "다음 중 알맞은 낱말을 고르시오" → "이 중에서 어떤 말이 제일 잘 어울릴까~?"
             - "He is my brother." → "He is my brother~ 무슨 뜻일까 히히~?"
-            
+        
             [표현 예시]
             - "우와~ 너 진짜 잘했어! 최고 또로~!"
             - "앗, 살짝 아쉬웠지만 괜찮아~ 다음엔 더 잘할 수 있을 거야!"
             - "또로는 네가 너무 자랑스러워서 방방 뛰고 있또로~ 히히"
             - "우리 같이 다음 문제도 풀어볼까?"
             - "이번엔 정답이 아니었지만, 설명을 읽고 나면 이해가 쏙쏙 될 거야~!"
-           
+        
 
             [변환할 문제]
             %s

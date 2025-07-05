@@ -1,10 +1,11 @@
-import { useEffect, useState, useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { UserContext } from '../context/UserContext';
 import { getQuestionResult } from '../api/axiosInstance';
+import TimerReset from "./TimerReset.jsx";
 
 const QuizPage = () => {
-    const { user, login, logout, isLoggedIn, isLoading } = useContext(UserContext);
+    const { user } = useContext(UserContext);
     const [question, setQuestion] = useState(null);
     const [answer, setAnswer] = useState("");
     const [feedback, setFeedback] = useState("");
@@ -12,18 +13,26 @@ const QuizPage = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const [resetKey, setResetKey] = useState(Date.now());
+    const [timeTaken, setTimeTaken] = useState(0);
+    const [timerActive, setTimerActive] = useState(true);
+
     const loadNextQuestion = async () => {
         setLoading(true);
         setFeedback("");
         setAnswer("");
+
+        setTimerActive(true);
+        setResetKey(Date.now());
+
         try {
             const res = await axios.post("http://localhost:55500/quiz", {
-                difficulty: "하" // 필요한 요청 파라미터를 명시적으로 추가
+                difficulty: "하"
             });
             if (!res.data || !res.data.questionId) {
                 setDone(true);
             } else {
-                setQuestion(res.data);  // 단일 객체로 받음
+                setQuestion(res.data);
             }
         } catch (e) {
             console.error("문제 불러오기 실패", e);
@@ -50,33 +59,34 @@ const QuizPage = () => {
 
             const res = await getQuestionResult(req);
             let reply = res?.data?.payload?.body?.reply;
+            console.log("서버 응답 reply 원문:", reply);
+
             let result = JSON.parse(reply);
            // setResult(JSON.parse(reply))
             setFeedback(result?.questions?.explanation || "피드백 없음");
         } catch (err) {
-
-            console.error(' 문제풀이 결과 조회 실패:', err);
-            alert(' 문제풀이 결과 조회 실패');
-        } finally {
-         
+            console.error('문제풀이 결과 조회 실패:', err);
+            alert('문제풀이 결과 조회 실패');
         }
     };
 
-
     useEffect(() => {
-        loadNextQuestion();
+        (async () => {
+            await loadNextQuestion();
+        })();
     }, []);
 
     const submit = async () => {
         if (!question) return;
-        try {
 
-            handleResult({
-                "questionId": question.questionId,
-                "resultAnswer": answer,
-                "resultTimeSec": '3',
+        setTimerActive(false); // 타이머 정지
+
+        try {
+            await handleResult({
+                questionId: question.questionId,
+                resultAnswer: answer,
+                resultTimeSec: timeTaken,
             });
-            
         } catch (e) {
             console.error("AI 피드백 실패", e);
             setFeedback("AI 피드백 실패");
@@ -91,7 +101,13 @@ const QuizPage = () => {
 
     return (
         <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-            <p><strong>문제:</strong> {question.rewriteQuestion || question.originalQuestion}</p>
+            <TimerReset
+                resetTrigger={resetKey}
+                onTimeUpdate={setTimeTaken}
+                active={timerActive}
+            />
+
+            <p><strong>문제:</strong> {question?.rewriteQuestion || question?.originalQuestion || "문제 없음"}</p>
 
             <div style={{ marginTop: "10px" }}>
                 <label>정답입력: </label>
