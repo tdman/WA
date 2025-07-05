@@ -9,5 +9,6 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface FeedbackMapper {
-	List<FeedbackDto> getFeedbackProblems(FeedbackDto dto);
+	List<FeedbackDto> getQuestionResultsList(FeedbackDto dto);
+	FeedbackDto getQuestionResults(FeedbackDto dto);
 }
