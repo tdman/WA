@@ -13,11 +13,11 @@ import { CanvasConfettiProvider } from "./context/CanvasConfettiContext"; // 캔
  */
 function App() {
     return (
-        <ConfettiProvider>
+            <ConfettiProvider>
             <Router>
                 {/*<BackgroundImage/>*/}
                 {/*<TtoroChat/>*/} {/* 또로 긴거 */}
-                <TtoroChat2/> {/* 또로 넓은거 */}
+                {/*<TtoroChat2/> /!* 또로 넓은거 *!/*/}
                 <AppRoutes/>
                 <FloatingChat />
             </Router>

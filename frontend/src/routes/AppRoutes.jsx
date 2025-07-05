@@ -12,6 +12,8 @@ import TtoroChat from "../components/TtoroChat.jsx";
 import TtoroChat2 from "../components/TtoroChat2.jsx";
 import PrivateRoute from '../context/PrivateRoute';
 import ProgressPage from "../pages/ProgressPage.jsx";
+import ProblemPage2 from "../pages/ProblemPage2.jsx";
+import QuizPage from "../components/QuizPage.jsx";
 
 /**
  * routes/AppRoutes.js - 화면 라우팅 정의
@@ -29,6 +31,8 @@ function AppRoutes() {
             <Route path="/tutor" element={<PrivateRoute><TutorPage/></PrivateRoute>}/>
             <Route path="/tutorDetail/:tutorId" element={<PrivateRoute><TutorDetailPage/></PrivateRoute>}/>
             <Route path="/progress" element={<PrivateRoute><ProgressPage/></PrivateRoute>}/>
+            <Route path="/problem" element={<ProblemPage2 />} />
+            <Route path="/quiz" element={<QuizPage />} />
         </Routes>
     );
 }

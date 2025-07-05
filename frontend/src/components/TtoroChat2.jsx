@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import '../css/TtoroChat2.css';
+import LogoutButton from "./LogoutButton.jsx";
 
 function parseMessageWithLink(text, handleLinkClick) {
     const regex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+|localhost:[^\s)]+)\)/g;
@@ -108,6 +109,9 @@ function TtoroChat() {
 
     return (
         <div className="chatbot-background">
+            <Box sx={{mt: 5, display: "flex", justifyContent: "flex-end"}}>
+                <LogoutButton/>
+            </Box>
             <div className="chatbot-inside">
                 <Box sx={{ width: '100%', maxWidth: 800, height: '100%' }}>
                     <Paper
@@ -161,7 +165,7 @@ function TtoroChat() {
             {/* ✅ 하단에 GIF 삽입 */}
             <div style={{ marginTop: '-100px', textAlign: 'center' }}>
                 <img
-                    src="../../public/ttoro_walk_pause_slower.gif"
+                    src="../assets/ttoro_walk_pause_slower.gif"
                     alt="걷는 또로"
                     style={{ width: '210px', height: 'auto' }}
                 />
