@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
+import { UserContext } from '../context/UserContext';
+import { getQuestionResult } from '../api/axiosInstance';
 
 const QuizPage = () => {
+    const { user, login, logout, isLoggedIn, isLoading } = useContext(UserContext);
     const [question, setQuestion] = useState(null);
     const [answer, setAnswer] = useState("");
     const [feedback, setFeedback] = useState("");
@@ -30,6 +33,36 @@ const QuizPage = () => {
         }
     };
 
+    
+    //문제풀이 결과 조회
+    const handleResult = async (data) => {
+        console.log('QuestionResult/handleResult');
+
+        try {
+            //서버전송
+            let req  =  {
+                "studentId": user?.studentId ?? 'hjoh' ,
+                "questionId": data?.questionId ?? 'math_logic_4',
+                "resultAnswer": data?.resultAnswer ?? '2970',
+                "resultTimeSec": data?.resultTimeSec ?? '3',
+            }
+
+
+            const res = await getQuestionResult(req);
+            let reply = res?.data?.payload?.body?.reply;
+            let result = JSON.parse(reply);
+           // setResult(JSON.parse(reply))
+            setFeedback(result?.questions?.explanation || "피드백 없음");
+        } catch (err) {
+
+            console.error(' 문제풀이 결과 조회 실패:', err);
+            alert(' 문제풀이 결과 조회 실패');
+        } finally {
+         
+        }
+    };
+
+
     useEffect(() => {
         loadNextQuestion();
     }, []);
@@ -37,14 +70,13 @@ const QuizPage = () => {
     const submit = async () => {
         if (!question) return;
         try {
-            const res = await axios.post("http://localhost:55500/questions/feedback", {
-                questionId: question.questionId,    // 원본 문제 ID
-                studentAnswer: answer               // 사용자 입력값
+
+            handleResult({
+                "questionId": question.questionId,
+                "resultAnswer": answer,
+                "resultTimeSec": '3',
             });
-
-            console.log('res >>>>>>> ',res);
-
-            setFeedback(res.data?.result?.data?.feedback || "피드백 없음");
+            
         } catch (e) {
             console.error("AI 피드백 실패", e);
             setFeedback("AI 피드백 실패");

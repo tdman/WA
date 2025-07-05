@@ -88,6 +88,11 @@ export const getQuestionFeedback = (req) => {
   return axiosInstance.post('questions/feedback', req);
 };
 
+// 5. 문제풀이 결과 단건  (사용 - 오희진)
+export const getQuestionResult = (req) => {
+  return axiosInstance.post('questions/result', req);
+};
+
 // 6. 챗봇 질문
 export const askChatbot = (req) => {
   return axiosInstance.post('/chatbot/ask', req);
