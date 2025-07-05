@@ -19,6 +19,9 @@ public class StudentService {
             case "email":
                 studentInfo.setEmail(value);
                 break;
+            case "mbti":
+                studentInfo.setMbti(value);
+                break;
             default:
                 return false;
         }

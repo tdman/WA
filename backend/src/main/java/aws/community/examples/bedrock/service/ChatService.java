@@ -6,9 +6,11 @@ import aws.community.examples.bedrock.dto.ChatResponse;
 import aws.community.examples.bedrock.dto.ScreenRoutesDto;
 import aws.community.examples.bedrock.dto.StudentDto;
 import aws.community.examples.bedrock.mapper.ScreenRoutesMapper;
-import com.fasterxml.jackson.core.JsonParseException;
+import aws.community.examples.bedrock.mapper.StudentMapper;
+import aws.community.examples.bedrock.util.S3Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class ChatService {
     private final Map<String, List<String>> sessionHistory = new ConcurrentHashMap<>();
     private final Map<String, List<ScreenRoutesDto>> screenRoutes = new ConcurrentHashMap<>();
@@ -32,6 +35,15 @@ public class ChatService {
 
     @Autowired
     ScreenRoutesMapper screenRoutesMapper;
+
+    @Autowired
+    StudentMapper studentMapper;
+
+    @Autowired
+    S3Util s3Util;
+
+    @Autowired
+    MailService mailService;
 
     private final BedrockRuntimeClient client;
     private final StudentService studentService;
@@ -99,15 +111,79 @@ public class ChatService {
 
                 if (!isEmpty(dto.getField()) && !isEmpty(dto.getValue())) {
                     // 이메일만 변경 가능
-                    if ("email".equals(dto.getField())) {
+                    if ("email".equals(dto.getField()) || "mbti".equals(dto.getField())) {
                         boolean result = studentService.updateUserField(
                                 studentId,
                                 dto.getField(),
                                 dto.getValue()
                         );
                         errorMsg = result
-                                ? (dto.getReply() != null ? dto.getReply() : "이메일 정보가 변경 됐어!")
-                                : "이메일 정보 변경에 실패했어. 다시 시도해봐!";
+                                ? (dto.getReply() != null ? dto.getReply()
+                                : dto.getField() + " 정보가 변경 됐어!")
+                                : dto.getField() + " 정보 변경에 실패했어. 다시 시도해봐!";
+                    }
+                }
+            }
+            else if ("send_report".equals(dto.getIntent())) {
+
+                if (isEmpty(dto.getValue())) {
+                    dto.setReply("이메일 주소가 어떻게 되는지 알려줄래? 그러면 학습 결과 리포트를 바로 보내드릴게~");
+                }
+                else {
+                    StudentDto studentInfo = studentMapper.getStudentInfo(studentId);
+
+                    String reportPrompt = String.format("""
+                          너는 학부모에게 발송할 학습 피드백 이메일을 HTML 형식으로 작성하는 선생님이야.
+                            
+                          다음 정보를 바탕으로, 이메일 본문을 예쁘고 정돈된 형식으로 HTML로 구성해줘.
+                          피드백 내용은 Claude 네가 스스로 판단해서 자연스럽게 구성해줘.
+    
+                          요구사항:
+                          - 전체 본문을 연한 회색(#f5f5f5) 배경 박스로 감싸줘
+                          - 테두리는 둥글게(border-radius: 12px), 안쪽 여백은 padding: 24px
+                          - 제목은 굵게(bold), 중요한 숫자나 단어는 <strong> 태그로 강조
+                          - 이모지 1~2개 사용 (예: 😊, 👍)
+                          - 문장은 따뜻하고 정중한 말투로 작성
+                          - 이메일 본문 전체는 <div> 하나로 감싸서 복사해서 바로 쓸 수 있게 해줘
+                          - 인사는 생락하고, 연한 회색 배경 박스만 이메일 본문에 넣을 거야.
+                            
+                          📌 Claude가 해야 할 일:
+                          - 평균 점수를 바탕으로 학습 태도 및 과목에 대한 피드백을 **알아서 작성** \s
+                            (예: "성실하게 참여했지만 독해력이 조금 부족한 모습", "기초는 잘 잡혀 있음" 등) \s
+                          - 다음 달 계획도 **스스로 판단**해서 자연스럽게 구성 \s
+                            (예: "기초 복습과 함께 독해력 보완에 집중할 예정입니다." 등)
+    
+                          단, 문장 구조는 아래 예시 형식을 유지해줘:
+    
+                          ---
+    
+                          <h2>%s 학생의 지난달 학습 진행 결과 안내드립니다.</h2>
+    
+                          <p><strong>학습 기간:</strong> %s<br>
+                          <strong>평균 점수:</strong> %s</p><br><br>
+    
+                          <p>... (피드백 본문: 점수 기반)</p><br>
+                          
+                          <p>... (다음 달 계획: 과목 중심 설명)</p><br>
+    
+                          <p>궁금한 점 있으시면 언제든지 편하게 말씀 주세요.<br>
+                          앞으로도 최선을 다해 지도하겠습니다. 감사합니다! 👍</p>
+    
+                          ---
+    
+                          이제 위 정보를 바탕으로 HTML 이메일 본문을 작성해줘. \s
+                          전체를 `<div>` 한 개로 감싸고, 이메일 클라이언트에서 예쁘게 보이도록 해줘.
+                            """, studentInfo.getName(), "지난 달", "20");
+
+                    // Claude에게 보낼 피드백 프롬프트 구성
+                    String reportContent = Claude.invoke(client, reportPrompt, 1.0, 4096);
+
+                    byte[] img = null;
+                    try {
+                        img = s3Util.readS3Img("woongae", "1.jpg");
+                        mailService.sendMailWithInlineImageBytes(dto.getValue(), studentInfo.getName() + " 학생의 학습 결과 리포트입니다.", reportContent, img, "image/png");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }

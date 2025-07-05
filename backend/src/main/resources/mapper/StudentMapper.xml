@@ -36,8 +36,13 @@
         UPDATE
             STUDENTS
         SET
-            EMAIL = #{email}
-            , UPDATED_AT = NOW()
+            <if test='email != null'>
+                EMAIL = #{email},
+            </if>
+            <if test='mbti != null'>
+                MBTI = #{mbti},
+            </if>
+            UPDATED_AT = NOW()
         WHERE
             STUDENT_ID = #{studentId}
     </update>
