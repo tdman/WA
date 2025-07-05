@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ChatBot from './ChatBot';
+import ChatBotWrapper from './ChatBotWrapper.jsx';
 import { Fab, Box, IconButton } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
@@ -116,7 +117,7 @@ function ChatBotFloating() {
                         >
                             <CloseIcon sx={{ color: '#fff', fontSize: 22 }} />
                         </IconButton>
-                        <ChatBot />
+                        <ChatBotWrapper />
                     </Box>
                 </Box>
             )}
