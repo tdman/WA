@@ -9,7 +9,6 @@ import { CheckCircle, Cancel, ArrowBack } from '@mui/icons-material';
 import LogoutButton from "../components/LogoutButton.jsx";
 import BackButton from "../components/BackButton.jsx";
 import { UserContext } from '../context/UserContext';
-import LoadingOverlay from "../components/LoadingOverlay";
 
 function FeedbackPage() {
 
@@ -17,24 +16,29 @@ function FeedbackPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [data, setData] = useState({});
-  const [loading, setLoading] = useState(false);
-  //TODO 오희진 임시 데이터
+  //TODO 오희진 임시 데이터 
   
     useEffect(() => {
+      // console.log('aaasdasdasdasd');
+      // console.log('isLoggedIn', isLoggedIn);
+      // console.log('isLoading',isLoading);
       handleFeedback();
     }, [isLoading]);
 
-
+     
     useEffect(() => {
       console.log('useEffect data', data);
+      // console.log('isLoggedIn', isLoggedIn);
+      // console.log('isLoading',isLoading);
+      // handleFeedback();
     }, [data]);
  
     const handleFeedback = async () => {
       console.log('FeedbackPage/handleFeedback');
-
+  
+   //   console.log('FeedbackPage/handleFeedback/location', location);
       try {
         //서버전송
-        setLoading(true);
 
         let req  =  { 
           "studentId": "STU1", 
@@ -43,21 +47,22 @@ function FeedbackPage() {
 
         const res = await getQuestionFeedback(req);
          let reply = res?.data?.payload?.body?.reply;
-
+        
+       // console.log('FeedbackPage/handleFeedback/data', reply)
+      //  console.log('FeedbackPage/handleFeedback/data', data)
+      //  data = ;
         setData(JSON.parse(reply))
-      } catch (err) {
+        //console.log('parseFeedback', JSON.stringify(parsed, null, 2));
 
+      } catch (err) {
         console.error(' 문제풀이 결과 피드백 조회 실패:', err);
         alert(' 문제풀이 결과 피드백 조회 실패');
-      } finally {
-          setLoading(false);
       }
     };
     
  if (!data) return <Typography>피드백을 불러오는 중입니다...</Typography>;
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
-      <LoadingOverlay open={loading} />
       <Typography variant="h4" gutterBottom>🧮 문제별 피드백</Typography>
 
       <Grid container spacing={3}>

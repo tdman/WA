@@ -46,12 +46,9 @@ public class Claude {
         JSONObject jsonBody = new JSONObject()
                 .put("anthropic_version", "bedrock-2023-05-31")
                 .put("messages", new JSONArray()
-                        .put(new JSONObject()  // 시스템 프롬프트
-                                .put("role", "system")
-                                .put("content", systemPrompt))
                         .put(new JSONObject()
                                 .put("role", "user")
-                                .put("content", prompt)))
+                                .put("content", systemPrompt + "\n\n" + prompt)))
                 .put("temperature", temperature)
                 .put("max_tokens", maxTokens);
 

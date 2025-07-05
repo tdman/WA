@@ -54,8 +54,14 @@ public class QuestionController {
 
 
     @PostMapping("/result")
-    public List<QuestionSearchResponse> resultQuestions(@RequestBody QuestionSearchRequest request) {
-        return questionService.searchQuestions(request);
+    public CmResponse<ResponseEntity<ChatResponse>> resultQuestions(@RequestBody FeedbackDto request) {
+    	try {
+			log.info(request.toString());
+	        return CmResponseFactory.success(ResponseEntity.ok(feedbackService.getResult(request)));
+	    } catch (Exception e) {
+	        return CmResponseFactory.fail("문제풀이 결과 실패");
+	    }
+    	
     }
 
 
