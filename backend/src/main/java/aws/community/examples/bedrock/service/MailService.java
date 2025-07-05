@@ -18,6 +18,15 @@ public class MailService {
         this.mailSender = mailSender;
     }
 
+    /**
+     *
+     * @param to 수신자 메일
+     * @param subject 메일 제목
+     * @param htmlText 메일 본문
+     * @param imageBytes 이미지 바이트 배열
+     * @param contentType 이미지 컨텐츠 타입 (예: "image/png", "image/jpeg")
+     * @throws MessagingException
+     */
     public void sendMailWithInlineImageBytes(String to, String subject, String htmlText, byte[] imageBytes, String contentType) throws MessagingException {
         String html = "<html><body>"+ htmlText +"<br><img src='cid:image1'></body></html>";// Set the recipient, subject, and HTML content
 
