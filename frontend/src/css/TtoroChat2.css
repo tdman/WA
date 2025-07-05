@@ -48,3 +48,87 @@
     border: 1px solid #ccc;
     border-radius: 6px;
 }
+
+.chatbot-msg-box {
+    max-width: 75%;
+    position: relative;
+    color: #795548;
+    padding: 1.2em 2em;
+    border-radius: 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    border: 1px solid #ffe082;
+}
+
+.chatbot-msg-box.user {
+    background-color: #fffde7;
+    border-top-right-radius: 0;
+    border-top-left-radius: 16px;
+}
+.chatbot-msg-box.ttoro {
+    background-color: #fff9c4;
+    border-top-right-radius: 16px;
+    border-top-left-radius: 0;
+}
+
+/* 꼬리 */
+.chatbot-msg-box.user::after,
+.chatbot-msg-box.ttoro::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    width: 0;
+    height: 0;
+    border-top: 0;
+    border-bottom: 14px solid;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.10);
+}
+
+.chatbot-msg-box.user::after {
+    right: -10px;
+    left: auto;
+    border-bottom-color: #fffde7;
+    transform: rotate(18deg);
+}
+.chatbot-msg-box.ttoro::after {
+    left: -10px;
+    right: auto;
+    border-bottom-color: #fff9c4;
+    transform: rotate(-18deg);
+}
+
+/* 걷는 또로 */
+.ttoro-walk-img-wrapper {
+    position: fixed;
+    top: -75px; /* 화면 상단에서 5% 위치 */
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 1200;
+    width: min(40vw, 220px);
+}
+.ttoro-walk-img-wrapper img {
+    width: 100%;
+    height: auto;
+    max-width: 220px;
+    min-width: 80px;
+}
+@media (max-width: 600px) {
+    .ttoro-walk-img-wrapper {
+        top: 8%; /* 모바일에서 조금 더 아래 */
+        width: 60vw;
+    }
+    .ttoro-walk-img-wrapper img {
+        min-width: 60px;
+    }
+}
+
+.rewordshop-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2000;
+}
