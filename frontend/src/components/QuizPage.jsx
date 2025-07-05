@@ -21,7 +21,6 @@ const QuizPage = () => {
         setLoading(true);
         setFeedback("");
         setAnswer("");
-
         setTimerActive(true);
         setResetKey(Date.now());
 

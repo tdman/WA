@@ -17,7 +17,8 @@ import walkTtoro from '../assets/ttoro_walk_pause_slower.gif';
 import {ConfettiContext} from '../context/ConfettiContext';
 import Tutors from '../pages/TutorPage'; // 상단에 추가
 import Quiz from './QuizPage'; // 상단에 추가
-import Progress from '../pages/ProgressPage'; // 상단에 추가
+import Progress from '../pages/ProgressPage';
+import ChatPage from "../pages/ChatPage.jsx"; // 상단에 추가
 
 // 임시 컴포넌트
 function ProgressPage({onClose}) {
@@ -197,151 +198,155 @@ function TtoroChat2() {
                 <LogoutButton/>
             </Box>
             <div className="chatbot-inside">
-                <Box sx={{width: '100%', maxWidth: 800, height: '100%'}}>
-                    <Paper
-                        elevation={3}
-                        sx={{
-                            p: 2,
-                            height: '100%',
-                            overflowY: 'auto',
-                            backgroundColor: 'rgba(255, 255, 255, 0.65)'
-                        }}
-                        ref={listRef}
-                    >
-                        <Box sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            mb: 2,
-                            borderTopLeftRadius: 8,
-                            borderTopRightRadius: 8,
-                        }}>
-                            <span style={{fontSize: 38, marginRight: 8}}>{TTORO_EMOJI}</span>
-                            <Typography variant="h6" gutterBottom>또로</Typography>
-                        </Box>
-                        {/* 하단 버튼으로 토글되는 컴포넌트들 */}
-                        {showProgress && <Progress onClose={() => setShowProgress(false)}/>}
-                        {showQuiz && <Quiz onClose={() => setShowQuiz(false)}/>}
-                        {showTutor && <Tutors onClose={() => setShowTutor(false)}/>}
-                        {showRewordShop && <RewordShop onClose={() => setShowRewordShop(false)}/>}
-                        <List>
-                            {messages.length === 0 && (
-                                <ListItem>
-                                    <ListItemText
-                                        primary={`${TTORO_EMOJI} 또로랑 놀자!`}
-                                        secondary="안녕!"
-                                    />
-                                </ListItem>
-                            )}
-                            {messages.map((msg, i) => (
-                                <ListItem
-                                    key={i}
-                                    sx={{
-                                        flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row',
-                                        alignItems: 'flex-end',
-                                        border: 'none',
-                                        background: 'none',
-                                        pr: msg.sender === 'user' ? 2 : 0,
-                                        pl: msg.sender === 'user' ? 0 : 2,
-                                    }}
-                                >
-                                    <Box className={`chatbot-msg-box ${msg.sender === 'user' ? 'user' : 'ttoro'}`}>
-                                        {msg.sender === '또로'
-                                            ? parseMessageWithLink(msg.text, handleLinkClick)
-                                            : msg.text}
-                                        <Typography
-                                            variant="caption"
-                                            sx={{
-                                                display: 'block',
-                                                color: '#a1887f',
-                                                fontWeight: 700,
-                                                textAlign: msg.sender === 'user' ? 'right' : 'left',
-                                                mt: 0.5,
-                                                opacity: 0.85,
-                                                letterSpacing: 0.5,
-                                            }}
-                                        >
-                                            {msg.sender === 'user' ? (
-                                                <>
-                                                    {USER_EMOJI} {userName}
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <img src={TTORO_IMG} alt="또로" style={{
-                                                        width: 24,
-                                                        height: 24,
-                                                        verticalAlign: 'middle',
-                                                        marginRight: 4
-                                                    }}/>
-                                                    또로
-                                                </>
-                                            )}
-                                        </Typography>
-                                    </Box>
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Paper>
-                    <Box sx={{display: 'flex', mt: 1}}>
-                        <TextField
-                            fullWidth
-                            size="small"
-                            placeholder="메시지를 입력하세요..."
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    handleSend();
-                                }
-                            }}
-                        />
-                        <IconButton onClick={handleSend} color="primary">
-                            <SendIcon/>
-                        </IconButton>
-                    </Box>
+                {/*<Box sx={{width: '100%', maxWidth: 800, height: '100%'}}>*/}
+                {/*    <Paper*/}
+                {/*        elevation={3}*/}
+                {/*        sx={{*/}
+                {/*            p: 2,*/}
+                {/*            height: '100%',*/}
+                {/*            overflowY: 'auto',*/}
+                {/*            backgroundColor: 'rgba(255, 255, 255, 0.65)'*/}
+                {/*        }}*/}
+                {/*        ref={listRef}*/}
+                {/*    >*/}
+                {/*        <Box sx={{*/}
+                {/*            display: 'flex',*/}
+                {/*            alignItems: 'center',*/}
+                {/*            mb: 2,*/}
+                {/*            borderTopLeftRadius: 8,*/}
+                {/*            borderTopRightRadius: 8,*/}
+                {/*        }}>*/}
+                {/*            <span style={{fontSize: 38, marginRight: 8}}>{TTORO_EMOJI}</span>*/}
+                {/*            <Typography variant="h6" gutterBottom>또로</Typography>*/}
+                {/*        </Box>*/}
+                {/*        /!* 하단 버튼으로 토글되는 컴포넌트들 *!/*/}
+                {/*        {showProgress && <Progress onClose={() => setShowProgress(false)}/>}*/}
+                {/*        {showQuiz && <Quiz onClose={() => setShowQuiz(false)}/>}*/}
+                {/*        {showTutor && <Tutors onClose={() => setShowTutor(false)}/>}*/}
+                {/*        {showRewordShop && <RewordShop onClose={() => setShowRewordShop(false)}/>}*/}
+                {/*        <List>*/}
+                {/*            {messages.length === 0 && (*/}
+                {/*                <ListItem>*/}
+                {/*                    <ListItemText*/}
+                {/*                        primary={`${TTORO_EMOJI} 또로랑 놀자!`}*/}
+                {/*                        secondary="안녕!"*/}
+                {/*                    />*/}
+                {/*                </ListItem>*/}
+                {/*            )}*/}
+                {/*            {messages.map((msg, i) => (*/}
+                {/*                <ListItem*/}
+                {/*                    key={i}*/}
+                {/*                    sx={{*/}
+                {/*                        flexDirection: msg.sender === 'user' ? 'row-reverse' : 'row',*/}
+                {/*                        alignItems: 'flex-end',*/}
+                {/*                        border: 'none',*/}
+                {/*                        background: 'none',*/}
+                {/*                        pr: msg.sender === 'user' ? 2 : 0,*/}
+                {/*                        pl: msg.sender === 'user' ? 0 : 2,*/}
+                {/*                    }}*/}
+                {/*                >*/}
+                {/*                    <Box className={`chatbot-msg-box ${msg.sender === 'user' ? 'user' : 'ttoro'}`}>*/}
+                {/*                        {msg.sender === '또로'*/}
+                {/*                            ? parseMessageWithLink(msg.text, handleLinkClick)*/}
+                {/*                            : msg.text}*/}
+                {/*                        <Typography*/}
+                {/*                            variant="caption"*/}
+                {/*                            sx={{*/}
+                {/*                                display: 'block',*/}
+                {/*                                color: '#a1887f',*/}
+                {/*                                fontWeight: 700,*/}
+                {/*                                textAlign: msg.sender === 'user' ? 'right' : 'left',*/}
+                {/*                                mt: 0.5,*/}
+                {/*                                opacity: 0.85,*/}
+                {/*                                letterSpacing: 0.5,*/}
+                {/*                            }}*/}
+                {/*                        >*/}
+                {/*                            {msg.sender === 'user' ? (*/}
+                {/*                                <>*/}
+                {/*                                    {USER_EMOJI} {userName}*/}
+                {/*                                </>*/}
+                {/*                            ) : (*/}
+                {/*                                <>*/}
+                {/*                                    <img src={TTORO_IMG} alt="또로" style={{*/}
+                {/*                                        width: 24,*/}
+                {/*                                        height: 24,*/}
+                {/*                                        verticalAlign: 'middle',*/}
+                {/*                                        marginRight: 4*/}
+                {/*                                    }}/>*/}
+                {/*                                    또로*/}
+                {/*                                </>*/}
+                {/*                            )}*/}
+                {/*                        </Typography>*/}
+                {/*                    </Box>*/}
+                {/*                </ListItem>*/}
+                {/*            ))}*/}
+                {/*        </List>*/}
+                {/*    </Paper>*/}
+                {/*    <Box sx={{display: 'flex', mt: 1}}>*/}
+                {/*        <TextField*/}
+                {/*            fullWidth*/}
+                {/*            size="small"*/}
+                {/*            placeholder="메시지를 입력하세요..."*/}
+                {/*            value={input}*/}
+                {/*            onChange={(e) => setInput(e.target.value)}*/}
+                {/*            onKeyDown={(e) => {*/}
+                {/*                if (e.key === 'Enter') {*/}
+                {/*                    e.preventDefault();*/}
+                {/*                    handleSend();*/}
+                {/*                }*/}
+                {/*            }}*/}
+                {/*        />*/}
+                {/*        <IconButton onClick={handleSend} color="primary">*/}
+                {/*            <SendIcon/>*/}
+                {/*        </IconButton>*/}
+                {/*    </Box>*/}
+                {/*</Box>*/}
+                {/*<Box sx={{width: '100%', maxWidth: 800, height: '100%'}}>*/}
+                <Box sx={{height: '100%'}}>
+                    <ChatPage />
                 </Box>
             </div>
             <div className="ttoro-walk-img-wrapper">
                 <img src={walkTtoro} alt="걷는 또로"/>
             </div>
             {/* 하단 버튼 4개 */}
-            <Box
-                sx={{
-                    position: 'fixed',
-                    bottom: 100,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    zIndex: 1300,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: 1,
-                }}
-            >
-                <Button
-                    onClick={() => setShowProgress((prev) => !prev)}
-                    sx={{bgcolor: '#e3f2fd', color: '#1976d2', fontWeight: 700}}
-                >
-                    진도 보기
-                </Button>
-                <Button
-                    onClick={() => setShowQuiz((prev) => !prev)}
-                    sx={{bgcolor: '#fff9c4', color: '#bfa000', fontWeight: 700}}
-                >
-                    퀴즈 보기
-                </Button>
-                <Button
-                    onClick={() => setShowTutor((prev) => !prev)}
-                    sx={{bgcolor: '#ffe0b2', color: '#e65100', fontWeight: 700}}
-                >
-                    튜터 보기
-                </Button>
-                <Button
-                    onClick={() => setShowRewordShop((prev) => !prev)}
-                    sx={{bgcolor: '#c8e6c9', color: '#388e3c', fontWeight: 700}}
-                >
-                    보상 보기
-                </Button>
-            </Box>
+            {/*<Box*/}
+            {/*    sx={{*/}
+            {/*        position: 'fixed',*/}
+            {/*        bottom: 100,*/}
+            {/*        left: '50%',*/}
+            {/*        transform: 'translateX(-50%)',*/}
+            {/*        zIndex: 1300,*/}
+            {/*        display: 'flex',*/}
+            {/*        justifyContent: 'center',*/}
+            {/*        gap: 1,*/}
+            {/*    }}*/}
+            {/*>*/}
+                {/*<Button*/}
+                {/*    onClick={() => setShowProgress((prev) => !prev)}*/}
+                {/*    sx={{bgcolor: '#e3f2fd', color: '#1976d2', fontWeight: 700}}*/}
+                {/*>*/}
+                {/*    진도 보기*/}
+                {/*</Button>*/}
+                {/*<Button*/}
+                {/*    onClick={() => setShowQuiz((prev) => !prev)}*/}
+                {/*    sx={{bgcolor: '#fff9c4', color: '#bfa000', fontWeight: 700}}*/}
+                {/*>*/}
+                {/*    퀴즈 보기*/}
+                {/*</Button>*/}
+                {/*<Button*/}
+                {/*    onClick={() => setShowTutor((prev) => !prev)}*/}
+                {/*    sx={{bgcolor: '#ffe0b2', color: '#e65100', fontWeight: 700}}*/}
+                {/*>*/}
+                {/*    튜터 보기*/}
+                {/*</Button>*/}
+                {/*<Button*/}
+                {/*    onClick={() => setShowRewordShop((prev) => !prev)}*/}
+                {/*    sx={{bgcolor: '#c8e6c9', color: '#388e3c', fontWeight: 700}}*/}
+                {/*>*/}
+                {/*    보상 보기*/}
+                {/*</Button>*/}
+            {/*</Box>*/}
         </div>
     );
 }

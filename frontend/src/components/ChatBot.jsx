@@ -14,6 +14,7 @@ import Tutors from '../pages/TutorPage';
 import ProblemCard from './ProblemCard';
 import Feedback from '../pages/FeedbackPage';
 import RewordShop from '../components/RewordShop.jsx';
+import QuizPage from "../components/QuizPage.jsx";
 
 const DOG_EMOJI = "🐶";
 
@@ -72,6 +73,7 @@ function ChatBot() {
 
     const { setShowConfetti } = useContext(ConfettiContext);
 
+    const [showQuiz, setShowQuiz] = useState(false);
     const [showTutors, setShowTutors] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
     const [showRewordShop, setShowRewordShop] = useState(false);
@@ -108,12 +110,12 @@ function ChatBot() {
 
     // 테스트
     useEffect(() => {
-        if (showProblem || showTutors || showFeedback || showRewordShop) {
+        if (showQuiz || showTutors || showFeedback || showRewordShop) {
             if (listRef.current) {
                 listRef.current.scrollTop = listRef.current.scrollHeight;
             }
         }
-    }, [showProblem, showTutors, showFeedback, showRewordShop]);
+    }, [showQuiz, showTutors, showFeedback, showRewordShop]);
 
     const triggerConfettiIfNeeded = (text) => {
         setShowConfetti(true);
@@ -161,41 +163,42 @@ function ChatBot() {
     };
 
     return (
-        <Box sx={{ position: 'relative', width: 420, mx: 'auto', mt: 4 }}>
+        <Box sx={{ position: 'relative', mx: 'auto' , mt: 2 }}>
+        {/*<Box sx={{ position: 'relative', width: '100%', mx: 'auto', mt: 4 }}>*/}
             {/* 강아지 귀 */}
-            <Box
-                sx={{
-                    position: 'absolute',
-                    top: -40,
-                    left: 30,
-                    width: 60,
-                    height: 80,
-                    bgcolor: '#d2a679',
-                    borderRadius: '60% 60% 80% 80%',
-                    transform: 'rotate(-25deg)',
-                    zIndex: 2,
-                }}
-            />
-            <Box
-                sx={{
-                    position: 'absolute',
-                    top: -40,
-                    right: 30,
-                    width: 60,
-                    height: 80,
-                    bgcolor: '#d2a679',
-                    borderRadius: '60% 60% 80% 80%',
-                    transform: 'rotate(25deg) scaleX(-1)',
-                    zIndex: 2,
-                }}
-            />
+            {/*<Box*/}
+            {/*    sx={{*/}
+            {/*        position: 'absolute',*/}
+            {/*        top: -40,*/}
+            {/*        left: 30,*/}
+            {/*        width: 60,*/}
+            {/*        height: 80,*/}
+            {/*        bgcolor: '#d2a679',*/}
+            {/*        borderRadius: '60% 60% 80% 80%',*/}
+            {/*        transform: 'rotate(-25deg)',*/}
+            {/*        zIndex: 2,*/}
+            {/*    }}*/}
+            {/*/>*/}
+            {/*<Box*/}
+            {/*    sx={{*/}
+            {/*        position: 'absolute',*/}
+            {/*        top: -40,*/}
+            {/*        right: 30,*/}
+            {/*        width: 60,*/}
+            {/*        height: 80,*/}
+            {/*        bgcolor: '#d2a679',*/}
+            {/*        borderRadius: '60% 60% 80% 80%',*/}
+            {/*        transform: 'rotate(25deg) scaleX(-1)',*/}
+            {/*        zIndex: 2,*/}
+            {/*    }}*/}
+            {/*/>*/}
             {/* 네모난 강아지 채팅창 */}
             <Paper
                 elevation={6}
                 sx={{
-                    width: 420,
-                    height: 520,
-                    minHeight: 320,
+                    width: 510,
+                    height: 290,
+                    minHeight: 290,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -205,25 +208,25 @@ function ChatBot() {
                     border: '4px solid #ffe5b4',
                     position: 'relative',
                     overflow: 'hidden',
-                    pt: 7, // 귀 공간 확보
+                    // pt: 7, // 귀 공간 확보
                 }}
             >
                 {/* 헤더 */}
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 'bold',
-                        fontSize: '1.3rem',
-                        color: '#7c4a03',
-                        mb: 1,
-                        gap: 1
-                    }}
-                >
-                    <span style={{ fontSize: 38, marginRight: 8 }}>{DOG_EMOJI}</span>
-                    또로핑
-                </Box>
+                {/*<Box*/}
+                {/*    sx={{*/}
+                {/*        display: 'flex',*/}
+                {/*        alignItems: 'center',*/}
+                {/*        justifyContent: 'center',*/}
+                {/*        fontWeight: 'bold',*/}
+                {/*        fontSize: '1.3rem',*/}
+                {/*        color: '#7c4a03',*/}
+                {/*        mb: 1,*/}
+                {/*        gap: 1*/}
+                {/*    }}*/}
+                {/*>*/}
+                {/*    <span style={{ fontSize: 38, marginRight: 8 }}>{DOG_EMOJI}</span>*/}
+                {/*    또로핑*/}
+                {/*</Box>*/}
                 {/* 메시지 영역 */}
                 <Box
                     ref={listRef}
@@ -232,15 +235,15 @@ function ChatBot() {
                         width: '90%',
                         overflowY: 'auto',
                         px: 2,
-                        py: 2,
+                        py: 1,
                         bgcolor: 'transparent'
                     }}
                 >
-                    {messages.length === 0 && (
-                        <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 8 }}>
-                            {DOG_EMOJI} 또로핑이랑 얘기하자!
-                        </Typography>
-                    )}
+                    {/*{messages.length === 0 && (*/}
+                    {/*    <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 8 }}>*/}
+                    {/*        {DOG_EMOJI} 또로핑이랑 얘기하자!*/}
+                    {/*    </Typography>*/}
+                    {/*)}*/}
                     {messages.map((msg, i) => (
                         <Box
                             key={i}
@@ -308,8 +311,13 @@ function ChatBot() {
                             </Box>
                         </Box>
                     ))}
+                    {showQuiz && (
+                        <Box sx={{ mt: 1 }}>
+                            <QuizPage />
+                        </Box>
+                    )}
                     {showProblem && (
-                        <Box sx={{ mt: 2 }}>
+                        <Box sx={{ mt: 1 }}>
                             <ProblemCard
                                 problem={currentProblem}
                                 onNext={handleNextProblem}
@@ -317,17 +325,17 @@ function ChatBot() {
                         </Box>
                     )}
                     {showTutors && (
-                        <Box sx={{ mt: 2 }}>
+                        <Box sx={{ mt: 1 }}>
                             <Tutors />
                         </Box>
                     )}
                     {showFeedback && (
-                        <Box sx={{ mt: 2 }}>
+                        <Box sx={{ mt: 1 }}>
                             <Feedback />
                         </Box>
                     )}
                     {showRewordShop && (
-                        <Box sx={{ mt: 2 }}>
+                        <Box sx={{ mt: 1 }}>
                             <RewordShop />
                         </Box>
                     )}
@@ -335,8 +343,8 @@ function ChatBot() {
                 {/* 입력창 */}
                 <Box
                     sx={{
-                        borderTop: '2px solid #ffe5b4',
-                        p: 1.2,
+                        borderTop: '1px solid #ffe5b4',
+                        p: 0.7,
                         bgcolor: '#ffe5b4',
                         display: 'flex',
                         alignItems: 'center',
@@ -381,11 +389,27 @@ function ChatBot() {
                 </Box>
             </Paper>
             {/* 하단 버튼들 */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, gap: 1 }}>
-                <Button onClick={() => setShowProblem((prev) => !prev)} sx={{ bgcolor: '#ffe5b4', color: '#7c4a03', fontWeight: 700 }}>문제 풀기</Button>
-                <Button onClick={() => setShowTutors((prev) => !prev)} sx={{ bgcolor: '#ffd699', color: '#7c4a03', fontWeight: 700 }}>튜터 보기</Button>
-                <Button onClick={() => setShowFeedback((prev) => !prev)} sx={{ bgcolor: '#ffe5b4', color: '#7c4a03', fontWeight: 700 }}>피드백 보기</Button>
-                <Button onClick={() => setShowRewordShop((prev) => !prev)} sx={{ bgcolor: '#ffd699', color: '#7c4a03', fontWeight: 700 }}>보상 보기</Button>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 0.5, gap: 1 }}>
+                <Button onClick={() =>
+                    setShowQuiz((prev) => !prev)}
+                        sx={{ bgcolor: '#e3f2fd', color: '#1976d2', fontWeight: 700 }}>
+                    문제 풀기
+                </Button>
+                <Button onClick={() =>
+                    setShowTutors((prev) => !prev)}
+                        sx={{ bgcolor: '#fff9c4', color: '#bfa000', fontWeight: 700 }}>
+                    튜터 보기
+                </Button>
+                <Button onClick={() =>
+                    setShowFeedback((prev) => !prev)}
+                        sx={{ bgcolor: '#ffe0b2', color: '#e65100', fontWeight: 700 }}>
+                    피드백 보기
+                </Button>
+                <Button onClick={() =>
+                    setShowRewordShop((prev) => !prev)}
+                        sx={{ bgcolor: '#c8e6c9', color: '#388e3c', fontWeight: 700 }}>
+                    보상 보기
+                </Button>
             </Box>
         </Box>
     );
