@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -143,70 +144,23 @@ public class ChatService {
             }
             else if ("send_report".equals(dto.getIntent()) || "send_feedback".equals(dto.getIntent()) || "send_email".equals(dto.getIntent())) {
 
-//                if (isEmpty(dto.getValue())) {
-//                    stucdentHistory.getOrDefault(sessionId, new StudentDto()).getEmail();
-//                    dto.setReply("이메일 주소가 어떻게 되는지 알려줄래? 그러면 학습 결과 리포트를 바로 보내드릴게~");
-//                }
-//                else {
-                    StudentDto studentInfo = studentMapper.getStudentInfo(studentId);
+                StudentDto studentInfo = studentMapper.getStudentInfo(studentId);
+                String reportPrompt = reportFormat(studentInfo.getName(), "2025/06/01 ~ 2025/06/30", String.valueOf(getRandomNum(1, 101)));
 
-                    String reportPrompt = String.format("""
-                          너는 학생에게 발송할 학습 피드백 이메일을 HTML 형식으로 작성하는 선생님이야.
-                            
-                          다음 정보를 바탕으로, 이메일 본문을 예쁘고 정돈된 형식으로 HTML로 구성해줘.
-                          피드백 내용은 Claude 네가 스스로 판단해서 자연스럽게 구성해줘.
-    
-                          요구사항:
-                          - 전체 본문을 연한 회색(#f5f5f5) 배경 박스로 감싸줘
-                          - 테두리는 둥글게(border-radius: 12px), 안쪽 여백은 padding: 24px
-                          - 제목은 굵게(bold), 중요한 숫자나 단어는 <strong> 태그로 강조
-                          - 이모지 1~2개 사용 (예: 😊, 👍)
-                          - 문장은 따뜻하고 정중한 말투로 작성
-                          - 이메일 본문 전체는 <div> 하나로 감싸서 복사해서 바로 쓸 수 있게 해줘
-                          - 인사는 생락하고, 연한 회색 배경 박스만 이메일 본문에 넣을 거야.
-                            
-                          📌 Claude가 해야 할 일:
-                          - 평균 점수를 바탕으로 학습 태도 및 과목에 대한 피드백을 **알아서 작성** \s
-                            (예: "성실하게 참여했지만 독해력이 조금 부족한 모습", "기초는 잘 잡혀 있음" 등) \s
-                          - 다음 달 계획도 **스스로 판단**해서 자연스럽게 구성 \s
-                            (예: "기초 복습과 함께 독해력 보완에 집중할 예정입니다." 등)
-    
-                          단, 문장 구조는 아래 예시 형식을 유지해줘:
-    
-                          ---
-    
-                          <h2>%s 학생의 지난달 학습 진행 결과 안내드립니다.</h2>
-    
-                          <p><strong>학습 기간:</strong> %s<br>
-                          <strong>평균 점수:</strong> %s</p><br><br>
-    
-                          <p>... (피드백 본문: 점수 기반)</p><br>
-                          
-                          <p>... (다음 달 계획: 과목 중심 설명)</p><br>
-    
-                          <p>궁금한 점 있으시면 언제든지 편하게 말씀 주세요.<br>
-                          앞으로도 최선을 다해 지도하겠습니다. 감사합니다! 👍</p>
-    
-                          ---
-    
-                          이제 위 정보를 바탕으로 HTML 이메일 본문을 작성해줘. \s
-                          전체를 `<div>` 한 개로 감싸고, 이메일 클라이언트에서 예쁘게 보이도록 해줘.
-                            """, studentInfo.getName(), "지난 달", "20");
+                // Claude에게 보낼 피드백 프롬프트 구성
+                String reportContent = Claude.invoke(client, reportPrompt, 1.0, 4096);
 
-                    // Claude에게 보낼 피드백 프롬프트 구성
-                    String reportContent = Claude.invoke(client, reportPrompt, 1.0, 4096);
+                byte[] img = null;
+                try {
 
-                    byte[] img = null;
-                    try {
-                        img = s3Util.readS3Img("testfilewa", "report_3.png");
-                        dto.setValue(studentInfo.getEmail());
-                        mailService.sendMailWithInlineImageBytes(dto.getValue(), studentInfo.getName() + " 학생의 학습 결과 리포트입니다.", reportContent, img, "image/png");
-                        dto.setReply("알겠어!" + studentInfo.getName() + "야 리포트가 잘 도착했는지 확인해봐~! 또로핑이 열심히 분석해서 보냈어!");
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    img = s3Util.readS3Img("testfilewa", "report_" + getRandomNum(1,4) + ".png");
+                    dto.setValue(studentInfo.getEmail());
+                    mailService.sendMailWithInlineImageBytes(dto.getValue(), studentInfo.getName() + " 학생의 학습 결과 리포트입니다.", reportContent, img, "image/png");
+                    dto.setReply("알겠어!" + studentInfo.getName() + "야 리포트가 잘 도착했는지 확인해봐~! 또로핑이 열심히 분석해서 보냈어!");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-            //}
+            }
         }
 
         reply = resolveReply(dto, errorMsg);
@@ -264,6 +218,7 @@ public class ChatService {
         sb.append("- 문제풀이 메뉴 추천은 반드시 아래 조건을 모두 만족할 때만 말해:\n");
         sb.append("  1) 사용자가 ‘더 풀고 싶어’, ‘또 해볼래’, ‘재밌다’, ‘문제 더 줘’ 등 명확하게 문제를 더 풀고 싶다는 의사를 표현했을 때만!\n");
         sb.append("  2) 또는 대화가 5회 이상 진행된 후 자연스럽게 제안할 타이밍일 때만!\n");
+        sb.append("  3) 또는 대화가 퀴즈가 3회 이상 진행된 후 자연스럽게 제안할 타이밍일 때만!\n");
         sb.append("- 위 조건을 만족하지 않으면 절대 문제풀이 메뉴로 이동을 제안하지 마!\n");
         sb.append("- 대화가 5회 미만이면 문제풀이 메뉴 추천은 절대 금지!\n");
         sb.append("- 메뉴 추천 문구: [문제풀이](localhost:3000/problems)로 가볼래? 재밌는 문제들이 많아!`\\n");
@@ -299,6 +254,52 @@ public class ChatService {
 
         sb.append("또로핑의 답변:");
         return sb.toString();
+    }
+
+    private String reportFormat(String studentName, String period, String score) {
+        return String.format("""
+              너는 학생에게 발송할 학습 피드백 이메일을 HTML 형식으로 작성하는 선생님이야.
+                
+              다음 정보를 바탕으로, 이메일 본문을 예쁘고 정돈된 형식으로 HTML로 구성해줘.
+              피드백 내용은 Claude 네가 스스로 판단해서 자연스럽게 구성해줘.
+
+              요구사항:
+              - 전체 본문을 연한 회색(#f5f5f5) 배경 박스로 감싸줘
+              - 테두리는 둥글게(border-radius: 12px), 안쪽 여백은 padding: 24px
+              - 제목은 굵게(bold), 중요한 숫자나 단어는 <strong> 태그로 강조
+              - 이모지 1~2개 사용 (예: 😊, 👍)
+              - 문장은 따뜻하고 정중한 말투로 작성
+              - 이메일 본문 전체는 <div> 하나로 감싸서 복사해서 바로 쓸 수 있게 해줘
+              - 인사는 생락하고, 연한 회색 배경 박스만 이메일 본문에 넣을 거야.
+                
+              📌 Claude가 해야 할 일:
+              - 평균 점수를 바탕으로 학습 태도 및 과목에 대한 피드백을 **알아서 작성** \s
+                (예: "성실하게 참여했지만 독해력이 조금 부족한 모습", "기초는 잘 잡혀 있음" 등) \s
+              - 다음 달 계획도 **스스로 판단**해서 자연스럽게 구성 \s
+                (예: "기초 복습과 함께 독해력 보완에 집중할 예정입니다." 등)
+
+              단, 문장 구조는 아래 예시 형식을 유지해줘:
+
+              ---
+
+              <h2>%s 학생의 지난달 학습 진행 결과 안내드립니다.</h2>
+
+              <p><strong>학습 기간:</strong> %s<br>
+              <strong>평균 점수:</strong> %s</p><br><br>
+
+              <p>... (피드백 본문: 점수 기반)</p><br>
+              
+              <p>... (다음 달 계획: 과목 중심 설명)</p><br>
+
+              <p>궁금한 점 있으시면 언제든지 편하게 말씀 주세요.<br>
+              앞으로도 최선을 다해 지도하겠습니다. 감사합니다! 👍</p>
+
+              ---
+
+              이제 위 정보를 바탕으로 HTML 이메일 본문을 작성해줘. \s
+              전체를 `<div>` 한 개로 감싸고, 이메일 클라이언트에서 예쁘게 보이도록 해줘.
+                """, studentName, period, score);
+
     }
 
     private String buildMenuInfo(String userInput) {
@@ -402,5 +403,9 @@ public class ChatService {
             return defaultValue;
         }
         return value.toString();
+    }
+
+    private int getRandomNum(int origin, int bound) {
+        return ThreadLocalRandom.current().nextInt(origin, bound);
     }
 }
