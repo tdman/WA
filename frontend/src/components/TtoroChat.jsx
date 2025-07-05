@@ -161,7 +161,7 @@ function TtoroChat() {
             {/* ✅ 하단에 GIF 삽입 */}
             <div style={{ marginTop: '16px', textAlign: 'center' }}>
                 <img
-                    src="../../public/ttoro_walk_pause_slower.gif"
+                    src="../assets/ttoro_walk_pause_slower.gif"
                     alt="걷는 또로"
                     style={{ width: '120px', height: 'auto' }}
                 />
