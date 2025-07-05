@@ -4,7 +4,7 @@ import { UserContext } from '../context/UserContext';
 import { getQuestionResult } from '../api/axiosInstance';
 import TimerReset from "./TimerReset.jsx";
 
-const QuizPage = () => {
+const QuizPage = (props) => {
     const { user } = useContext(UserContext);
     const [question, setQuestion] = useState(null);
     const [answer, setAnswer] = useState("");
@@ -17,6 +17,10 @@ const QuizPage = () => {
     const [timeTaken, setTimeTaken] = useState(0);
     const [timerActive, setTimerActive] = useState(true);
 
+    const [submitted, setSubmitted] = useState(false);
+
+
+    // 문제 불러오기 및 상위로 전달
     const loadNextQuestion = async () => {
         setLoading(true);
         setFeedback("");
@@ -32,6 +36,10 @@ const QuizPage = () => {
                 setDone(true);
             } else {
                 setQuestion(res.data);
+                // csm 문제를 상위로 전달
+                if (props.onQuestion) {
+                    props.onQuestion(res.data.rewriteQuestion || res.data.originalQuestion);
+                }
             }
         } catch (e) {
             console.error("문제 불러오기 실패", e);
@@ -41,29 +49,29 @@ const QuizPage = () => {
         }
     };
 
-    
-    //문제풀이 결과 조회
+    // 문제풀이 결과 조회
     const handleResult = async (data) => {
-        console.log('QuestionResult/handleResult');
-
         try {
-            //서버전송
             let req  =  {
                 "studentId": user?.studentId ?? 'hjoh' ,
                 "questionId": data?.questionId ?? 'math_logic_4',
                 "resultAnswer": data?.resultAnswer ?? '2970',
                 "resultTimeSec": data?.resultTimeSec ?? '3',
             }
-
-
             const res = await getQuestionResult(req);
             let reply = res?.data?.payload?.body?.reply;
-            console.log("서버 응답 reply 원문:", reply);
-
             let result = JSON.parse(reply);
-           // setResult(JSON.parse(reply))
-            setFeedback(result?.questions?.explanation || "피드백 없음");
+
+            // csm 상위로 결과 전달
+            result.status = "success";
+            if (props.onResult) props.onResult(result);
+
+            // 피드백 표시 -> 또로로 전달.
+            //setFeedback(result.questions?.explanation || "정답 확인!");
         } catch (err) {
+            let result = {status : "error"}
+            if (props.onResult) props.onResult(result);
+            setFeedback("AI 피드백 실패");
             console.error('문제풀이 결과 조회 실패:', err);
             alert('문제풀이 결과 조회 실패');
         }
@@ -73,26 +81,35 @@ const QuizPage = () => {
         (async () => {
             await loadNextQuestion();
         })();
+        // eslint-disable-next-line
     }, []);
 
     const submit = async () => {
         if (!question) return;
-
-        setTimerActive(false); // 타이머 정지
-
+        setTimerActive(false);
+        setSubmitted(true); // 제출 버튼 숨김
         try {
+
+
             await handleResult({
                 questionId: question.questionId,
                 resultAnswer: answer,
                 resultTimeSec: timeTaken,
             });
+
+
+            // csm 챗봇에 버튼 보여서, 계속 클릭 가능. 일단 제출하면 버튼 숨김
+            //setDone(true);
         } catch (e) {
             console.error("AI 피드백 실패", e);
             setFeedback("AI 피드백 실패");
         }
     };
 
-    const quit = () => setDone(true);
+    const quit = () => {
+        setDone(true);
+        if (props.onDone) props.onDone();
+    }
 
     if (error) return <div>{error}</div>;
     if (done) return <div>문제 풀이를 종료했또로~</div>;
@@ -118,17 +135,18 @@ const QuizPage = () => {
                 />
             </div>
 
-            {!feedback && (
-                <div style={{ marginTop: "10px" }}>
+            {/* 제출/그만풀기 버튼: 피드백이 없고, done이 아닐 때만 노출 */}
+            {!feedback && !done && !submitted && (
+                <div style={{marginTop: "10px"}}>
                     <button onClick={quit}>그만풀래</button>
-                    <button onClick={submit} style={{ marginLeft: "10px" }}>제출</button>
+                    <button onClick={submit} style={{marginLeft: "10px"}}>제출</button>
                 </div>
             )}
 
-            {feedback && (
+            {/* 피드백(퀴즈 결과) 있을 때만 다음 문제 버튼 노출 */}
+            {feedback && !done && (
                 <div style={{ marginTop: "20px" }}>
                     <p>{feedback}</p>
-                    <button onClick={quit}>그만풀래</button>
                     <button onClick={loadNextQuestion} style={{ marginLeft: "10px" }}>다음 문제</button>
                 </div>
             )}

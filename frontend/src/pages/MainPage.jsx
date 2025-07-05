@@ -1,7 +1,7 @@
 import React from "react";
 import {useNavigate} from "react-router-dom";
 import {Box, Button, Container, Typography} from "@mui/material";
-import RewordShop from "../components/RewordShop.jsx";
+import RewordShop from "../components/RewardShop.jsx";
 import LogoutButton from "../components/LogoutButton";
 
 function MainPage() {
